@@ -44,7 +44,9 @@ function test_when_schedules_is_empty_returns_an_error() {
 
 function test_schedule_entries_are_created() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"12:00\", \"type\": \"work\"}, {\"start\": \"12:00\", \"end\": \"13:00\", \"type\": \"break\"}]'"
-    
+
+    mock get_config_id 'echo "12345"'
+
     mock api "echo '{\"status\": 200, \"body\": null}'"
 
     result="$(create_remote_time_entries "2023-10-01" "2023-10-02")"
