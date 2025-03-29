@@ -50,7 +50,7 @@ There are 3 possible options to use the tool:
 
 ### Register your hours for current day
 
-It won't work on weekends as you probably don't want to register hours for the weekend).
+It won't work on weekends as you probably don't like to work and register hours on a weekend.
 
 ```sh
 absence.sh
