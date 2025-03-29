@@ -32,7 +32,7 @@ jobs:
         cd kcov
         mkdir build && cd build
         cmake ..
-        make -j$(nproc)
+        make
         sudo make install
     
     - name: 'install bashunit and kcov'
