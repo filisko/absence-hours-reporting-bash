@@ -18,10 +18,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: 'install dependencies'
-      run: |
-        ./setup.sh
-
     - name: 'install bashunit'
       run: |
         mkdir lib
