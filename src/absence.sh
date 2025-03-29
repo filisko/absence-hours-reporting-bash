@@ -180,7 +180,13 @@ $port
 
 "
 
-    mac=$(echo -n "$normalized_mac" | openssl dgst -sha256 -hmac "$key" -binary | base64)
+    if echo | openssl dgst -sha256 -hmac "test" >/dev/null 2>&1; then
+        # Linux
+        mac=$(echo -n "$normalized_mac" | openssl dgst -sha256 -hmac "$key" -binary | base64)
+    else
+        # macOS
+        mac=$(echo -n "$normalized_mac" | openssl dgst -sha256 -mac HMAC -macopt key:"$key" -binary | base64)
+    fi
 
     printf "Hawk id=\"$id\", ts=\"$timestamp\", nonce=\"$nonce\", mac=\"$mac\""
 }
