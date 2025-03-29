@@ -13,7 +13,7 @@ It requires the following binaries installed in your system (this is checked by 
 - base64
 - date
 
-You probably already have base64 and date, to install the missing ones you can copy/paste:
+You may already have base64 and date, to install the missing ones you can copy/paste:
 
 <details>
 <summary>Mac OS</summary>
