@@ -1,0 +1,22 @@
+name: test matrix
+on: push
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest, ubuntu-latest ]
+        include:
+        - os: macos-latest
+        - os: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: 'install bashunit'
+      run: |
+        mkdir lib
+        curl -s https://bashunit.typeddevs.com/install.sh | bash
+
+    - name: 'run tests'
+      run: |
+        $PWD/lib/bashunit tests
