@@ -40,9 +40,7 @@ function test_daily_entry_creation() {
     mock config_exists ok
     mock show_greetings "echo 'Hi! 👋😊'"
 
-    function create_remote_time_entries() {
-        echo "input params: $@"
-    }
+    mock create_remote_time_entries 'echo "input params: $@"'
 
     mock today "echo '2025-03-26'"
 

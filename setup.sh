@@ -25,8 +25,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   done
 fi
 
-# echo ‘export PATH=“/usr/local/opt/mysql-client/bin:$PATH”’ >> ~/.zshrc
-
 if [[ "$OSTYPE" == "linux"* ]]; then
   echo "Linux was detected ..."
   

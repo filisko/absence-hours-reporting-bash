@@ -261,12 +261,20 @@ function is_valid_date() {
 
 function date_is_workable() {
     local start_date="$1"
-
-    if [[ $(date -d "$start_date" +%u) -eq 6 ]] || [[ $(date -d "$start_date" +%u) -eq 7 ]]; then
+    
+    # Check the day of the week
+    if date --version >/dev/null 2>&1; then
+        # GNU date (Linux)
+        day_of_week=$(date -d "$start_date" +%u)
+    else
+        # BSD date (macOS)
+        day_of_week=$(date -j -f "%Y-%m-%d" "$start_date" +%u)
+    fi
+    
+    # Check if it's Saturday (6) or Sunday (7)
+    if [[ "$day_of_week" -eq 6 ]] || [[ "$day_of_week" -eq 7 ]]; then
         return 1
     fi
-
-    return 0
 }
 
 function create_remote_time_entries() {
