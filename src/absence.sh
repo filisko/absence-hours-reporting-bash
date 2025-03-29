@@ -232,15 +232,26 @@ function show_greetings() {
 function get_date_monday() {
     date_to_check="$1"
 
-    day_of_week=$(date -d "$date_to_check" +%u)
+    if date --version >/dev/null 2>&1; then
+        # GNU date (Linux)
+        day_of_week=$(date -d "$date_to_check" +%u)
+    else
+        # BSD date (macOS)
+        day_of_week=$(date -j -f "%Y-%m-%d" "$date_to_check" +%u)
+    fi
 
     # Calculate the number of days to subtract to reach the previous Monday
     days_to_subtract=$((day_of_week - 1))
 
-    # Get the date of the previous Monday
-    monday_date=$(date -d "$date_to_check -$days_to_subtract days" +%Y-%m-%d)
+    if date --version >/dev/null 2>&1; then
+        # GNU date (Linux)
+        monday_date=$(date -d "$date_to_check -$days_to_subtract days" +%Y-%m-%d)
+    else
+        # BSD date (macOS)
+        monday_date=$(date -j -v-"$days_to_subtract"d -f "%Y-%m-%d" "$date_to_check" "+%Y-%m-%d")
+    fi
 
-   printf $monday_date
+    printf "$monday_date"
 }
 
 function is_valid_date() {
