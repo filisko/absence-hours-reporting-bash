@@ -24,7 +24,7 @@ jobs:
 
     - name: 'install bashunit and kcov'
       run: |
-        sudo apt update && sudo apt-get -y install kcov
+        #sudo apt update && sudo apt-get -y install kcov
         mkdir lib
         curl -s https://bashunit.typeddevs.com/install.sh | bash
         chmod +x lib/bashunit  # Ensure script is executable
@@ -32,4 +32,4 @@ jobs:
     - name: 'run tests in parallel'
       run: |
         mkdir -p coverage
-        kcov --include-pattern=your_script_dir coverage/ ./tests.sh
+        ./tests.sh
