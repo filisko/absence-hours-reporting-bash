@@ -62,7 +62,7 @@ Future hours registrations are not possible (Absence doesn't allow it) so it's s
 
 If you run it any day before Friday it will register the hours for the previous days (e.g.: if you run it on a Wednesday, hours are registered for Monday, Tuestay and Wednesday).
 
-Also, if you've registered your hours already for say, Tuesday, it will only throw an error for that day but that's it (there's no mechanism in the tool to check if the hours were already registered in Absence). 
+Also, if you've registered your hours already for some day, it will only throw an error for that day but it will continue processing the rest of the days (there's no mechanism in the tool to check if the hours were already registered in Absence). 
 
 ```sh
 absence.sh week
