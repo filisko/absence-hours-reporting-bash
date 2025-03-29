@@ -463,6 +463,21 @@ function run() {
         return 1
     fi
 
+    # help
+    help="$1"
+    if [[ "$help" == "help" ]]; then
+        echo "Available options:"
+        echo ""
+        echo "$ absence.sh: Register a time entry for today."
+        echo "$ absence.sh week: Registers time entries for the week."
+        echo "$ absence.sh 2025-03-25 2025-03-28: Register time entries for a specific range."
+        echo "$ absence.sh help: Shows this help."
+        echo ""
+        echo "Please note all options are restricted to future dates by Absence"
+        echo ""
+        return 0
+    fi
+
     show_greetings
     if [[ $? -ne 0 ]]; then
         return $?
