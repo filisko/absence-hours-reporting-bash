@@ -44,7 +44,7 @@ function test_when_schedules_is_empty_returns_an_error() {
 
 function test_schedule_entries_are_created() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"12:00\", \"type\": \"work\"}, {\"start\": \"12:00\", \"end\": \"13:00\", \"type\": \"break\"}]'"
-    mock get_config_id 'echo "12345"'
+    mock get_config_id 'echo "123456"'
 
     mock api "echo '{\"status\": 200, \"body\": null}'"
 
@@ -61,8 +61,8 @@ function test_schedule_entries_are_created() {
 
 function test_when_there_is_an_api_422_error() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
-    mock get_config_id 'echo "12345"'
-
+    mock get_config_id 'echo "123456"'
+    
     mock api "echo '{\"status\": 422, \"body\": null}'; return 4"
 
     result="$(create_remote_time_entries "2023-10-01" "2023-10-01")"
@@ -74,8 +74,8 @@ function test_when_there_is_an_api_422_error() {
 
 function test_when_there_is_an_api_412_error() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
-    mock get_config_id 'echo "12345"'
-
+    mock get_config_id 'echo "123456"'
+    
     mock api "echo '{\"status\": 412, \"body\": \"Entries cannot overlap\"}'; return 4"
 
     result="$(create_remote_time_entries "2023-10-01" "2023-10-01")"
@@ -85,8 +85,8 @@ function test_when_there_is_an_api_412_error() {
 
 function test_when_there_is_an_api_500_error() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
-    mock get_config_id 'echo "12345"'
-
+    mock get_config_id 'echo "123456"'
+    
     mock api "echo '{\"status\": 500, \"body\": \"Internal error\"}'; return 5"
 
     result="$(create_remote_time_entries "2023-10-01" "2023-10-01")"
