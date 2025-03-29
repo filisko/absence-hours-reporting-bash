@@ -4,7 +4,7 @@
 
 Fully tested Bash tool to automatically register your breaks and working hours in absence.io.
 
-## Setup
+## 🔧 Setup
 
 It requires the following binaries installed in your system (this is checked by the tool):
 - jq
@@ -33,7 +33,7 @@ sudo apt-get install -y jq curl openssl
 
 </details>
 
-## Installation
+## ⚙️ Installation
 
 ```sh
 wget https://raw.githubusercontent.com/filisko/absence-hours-reporting-bash/refs/heads/main/src/absence.sh
@@ -44,7 +44,7 @@ After installing it an running it for the first time, it will create a **JSON co
 
 To find API's credentials, you can go to: Absence -> Profile -> Integrations -> API Key (ID/Key).
 
-## Usage
+## 🕹️ Usage
 
 There are 3 possible options to use the tool:
 
