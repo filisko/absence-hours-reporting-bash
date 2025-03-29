@@ -13,13 +13,13 @@ It requires the following binaries installed in your system (this is checked by 
 - base64
 - date
 
-You probably already have openssl, base64 and date, to install the missing ones you can copy/paste:
+You probably already have base64 and date, to install the missing ones you can copy/paste:
 
 <details>
 <summary>Mac OS</summary>
   
 ```sh
-brew install jq curl
+brew install jq curl openssl
 ```
 
 </details>
@@ -28,7 +28,7 @@ brew install jq curl
 <summary>Ubuntu</summary>
   
 ```sh
-sudo apt-get install -y jq curl
+sudo apt-get install -y jq curl openssl
 ```
 
 </details>
