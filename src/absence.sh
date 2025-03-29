@@ -501,8 +501,9 @@ function run() {
 
     # today, one working day
     if ! date_is_workable "$today"; then
-        echo $(error; red "Today should be a working day, try using the week option.")
+        echo $(error; red "Today should be a working day, try using the week or dates range options.")
         echo "$ absence.sh week"
+        echo "$ absence.sh 2025-03-04 2024-03-06"
         return 1
     fi
 
