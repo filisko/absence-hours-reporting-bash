@@ -65,9 +65,7 @@ function test_when_week_has_finished_entries_are_created_for_all_the_week() {
     mock config_exists ok
     mock show_greetings ok
 
-    function create_remote_time_entries() {
-        echo "input params: $@"
-    }
+    mock create_remote_time_entries 'echo "input params: $@"'
     
     mock today "echo '2025-03-01'"
 
@@ -79,10 +77,8 @@ function test_when_week_has_finished_entries_are_created_for_all_the_week() {
 function test_when_week_hasnt_finished_yet_it_does_what_it_can() {
     mock config_exists ok
     mock show_greetings ok
-
-    function create_remote_time_entries() {
-        echo "input params: $@"
-    }
+    
+    mock create_remote_time_entries 'echo "input params: $@"'
 
     mock today "echo '2025-02-26'"
 
@@ -103,10 +99,8 @@ function test_when_start_date_and_end_date_are_passed_but_end_date_is_invalid() 
 function test_when_start_date_and_end_date() {
     mock config_exists ok
     mock show_greetings ok
-
-    function create_remote_time_entries() {
-        echo "input params: $@"
-    }
+    
+    mock create_remote_time_entries 'echo "input params: $@"'
 
     result="$(run "2025-02-24" "2025-02-27")"
 

@@ -262,7 +262,6 @@ function is_valid_date() {
 function date_is_workable() {
     local start_date="$1"
     
-    # Check the day of the week
     if date --version >/dev/null 2>&1; then
         # GNU date (Linux)
         day_of_week=$(date -d "$start_date" +%u)
