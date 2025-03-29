@@ -21,29 +21,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install dependencies for kcov
-      timeout-minutes: 5
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y git cmake g++ libcurl4-openssl-dev libelf-dev libdw-dev libunwind-dev
-    
-    - name: Build and install kcov
-      timeout-minutes: 5
-      run: |
-        git clone https://github.com/SimonKagstrom/kcov.git
-        cd kcov
-        mkdir build && cd build
-        cmake ..
-        make
-        sudo make install
-    
+
     - name: 'install bashunit and kcov'
       run: |
         mkdir lib
         curl -s https://bashunit.typeddevs.com/install.sh | bash
         chmod +x lib/bashunit
-
-    - name: 'run tests in parallel'
+    
+    - name: Run tests with kcov Docker image
       run: |
         mkdir -p coverage
-        kcov --include-pattern=./src coverage/ ./tests.sh
+        docker run --rm \
+          -v "$(pwd):/project" \
+          -v "$(pwd)/coverage:/coverage" \
+          simonkagstrom/kcov \
+          --include-pattern=/project/src \
+          --output=/coverage /project/tests.sh
