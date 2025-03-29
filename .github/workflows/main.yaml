@@ -29,4 +29,4 @@ jobs:
 
     - name: Run tests with kcov Docker image
       run: |
-        tests.sh./tests.sh
+        ./tests.sh
