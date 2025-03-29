@@ -34,6 +34,6 @@ jobs:
         docker run --rm \
           -v "$(pwd):/project" \
           -v "$(pwd)/coverage:/coverage" \
-          simonkagstrom/kcov \
+          kcov/kcov \
           --include-pattern=/project/src \
           --output=/coverage /project/tests.sh
