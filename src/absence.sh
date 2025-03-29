@@ -25,12 +25,12 @@ else
 fi
 
 # ANSI color output helpers
-green() { echo -en "${GREEN}"$@"${CLEAR}"; }
-red() { echo -en "${RED}"$@"${CLEAR}"; }
-bold() { echo -en "${BOLD}"$@"${CLEAR}"; }
-bold_green() { echo -en "${BOLD_GREEN}"$@"${CLEAR}"; }
-normal() { echo -en "${CLEAR}"$@"${CLEAR}"; }
-str_pad() {
+function green() { echo -en "${GREEN}"$@"${CLEAR}"; }
+function red() { echo -en "${RED}"$@"${CLEAR}"; }
+function bold() { echo -en "${BOLD}"$@"${CLEAR}"; }
+function bold_green() { echo -en "${BOLD_GREEN}"$@"${CLEAR}"; }
+function normal() { echo -en "${CLEAR}"$@"${CLEAR}"; }
+function str_pad() {
   local str="$1"
   local length="$2"
   local pad_char="${3:- }"
@@ -52,14 +52,14 @@ str_pad() {
   fi
 }
 
-success() {
+function success() {
     local check="✔"
     green $check
     # white space
     echo -e "\012"
 }
 
-error() {
+function error() {
     local x="✘"
     red $x
     # white space
