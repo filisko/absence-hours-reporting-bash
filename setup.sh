@@ -5,7 +5,7 @@ if ! [[ "$OSTYPE" == "darwin"* ]] && ! [[ "$OSTYPE" == "linux"* ]]; then
     exit 1
 fi
 
-declare -a deps=("jq" "curl" "openssl" "base64")
+declare -a deps=("jq" "curl" "openssl" "base64" "date")
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   echo "MacOS was detected ..."
