@@ -370,7 +370,34 @@ function add_days() {
     fi
 }
 
+function check_dependencies() {
+    declare -a deps=("jq" "curl" "openssl" "base64" "date")
+    
+    declare -a missing=()
+
+    for dep in "${deps[@]}"; do
+        echo -n $("Checking if $dep is installed... ")  
+          
+
+        if ! which "$dep" > /dev/null; then
+            missing=("${missing[@]}" "$dep")
+        fi
+    done
+
+    if [[ ${#missing[@]} -ne 0 ]]; then
+        local imploded_methods=$(IFS=","; echo "${missing[*]}")
+        echo $imploded_methods
+        
+        return 1
+    fi
+}
+
 function run() {
+    check_dependencies
+    if [[ $? -ne 0 ]]; then
+        return $?
+    fi
+
     if ! config_exists; then
         create_config
 
