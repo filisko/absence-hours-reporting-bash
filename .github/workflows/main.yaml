@@ -34,8 +34,8 @@ jobs:
         docker run --rm \
           -v "$(pwd):/project" \
           -v "$(pwd)/coverage:/coverage" \
-          --entrypoint kcov \
-          kcov/kcov \
-          --include-pattern=/project/src \
-          /coverage \
-          /project/tests.sh
+          --entrypoint bash \
+          kcov/kcov -c "
+            apt-get update && apt-get install -y jq curl openssl && \
+            kcov --include-pattern=/project/src /coverage /project/tests.sh"
+
