@@ -26,4 +26,4 @@ jobs:
 
     - name: 'run tests'
       run: |
-        $PWD/lib/bashunit -v tests || exit 1
+        $PWD/lib/bashunit --verbose tests || exit 1
