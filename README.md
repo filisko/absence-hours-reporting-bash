@@ -1,6 +1,6 @@
 # Absence.IO hours reporting tool
 
-![ci](https://github.com/filisko/absence-hours-reporting-bash/actions/workflows/main.yml/badge.svg)
+![ci](https://github.com/filisko/absence-hours-reporting-bash/actions/workflows/main.yaml/badge.svg)
 
 Fully tested Bash tool to automatically register your breaks and working hours in absence.io.
 
