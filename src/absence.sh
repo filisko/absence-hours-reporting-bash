@@ -187,7 +187,7 @@ $port
         # macOS
         mac=$(echo -n "$normalized_mac" | openssl dgst -sha256 -mac HMAC -macopt key:"$key" -binary | base64)
     fi
-
+    
     printf "Hawk id=\"$id\", ts=\"$timestamp\", nonce=\"$nonce\", mac=\"$mac\""
 }
 
@@ -345,15 +345,15 @@ function create_remote_time_entries() {
         echo "Date: $current_date"
 
         echo "$json_schedule" | jq -c '.[]' | while read -r entry; do
-            start="$(echo "$entry" | jq -jc '.start')"
-            end="$(echo "$entry" | jq -jc '.end')"
-            type="$(echo "$entry" | jq -jc '.type')"
+            start=$(echo "$entry" | jq -r '.start')
+            end=$(echo "$entry" | jq -r '.end')
+            type=$(echo "$entry" | jq -r '.type')
 
             local start_datetime="${current_date}T${start}:00.000Z"
             local end_datetime="${current_date}T${end}:00.000Z"
             
-            local json_payload=$(jq -n --arg userId "$userId" '.userId = $userId' --arg start "$start_datetime" '.start = $start' \
-                --arg end "$end_datetime" '.end = $end' --arg type "$type" '.type = $type' \
+            local json_payload=$(jq -n --arg userId "$userId" --arg start "$start_datetime" \
+                --arg end "$end_datetime" --arg type "$type" \
                 '{
                     userId: $userId,
                     start: $start,

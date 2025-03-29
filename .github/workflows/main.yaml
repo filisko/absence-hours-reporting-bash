@@ -14,28 +14,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [  ubuntu-latest, macos-latest ]
+        os: [ ubuntu-latest, macos-latest ]
         include:
         - os: ubuntu-latest
         - os: macos-latest
     steps:
     - uses: actions/checkout@v4
 
-
-    - name: 'install bashunit and kcov'
+    - name: 'install bashunit'
       run: |
         mkdir lib
         curl -s https://bashunit.typeddevs.com/install.sh | bash
         chmod +x lib/bashunit
-    
+
     - name: Run tests with kcov Docker image
       run: |
-        mkdir -p coverage
-        docker run --rm \
-          -v "$(pwd):/project" \
-          -v "$(pwd)/coverage:/coverage" \
-          --entrypoint bash \
-          kcov/kcov -c "
-            apt-get update && apt-get install -y jq curl openssl && \
-            kcov --include-pattern=/project/src /coverage /project/tests.sh"
-
+        tests.sh./tests.sh
