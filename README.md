@@ -75,3 +75,5 @@ This option allows you to specify your own date range. Similar to the previous o
 ```sh
 absence.sh 2025-03-10 2025-03-13
 ```
+
+## License
