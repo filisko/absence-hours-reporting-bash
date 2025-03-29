@@ -2,9 +2,9 @@
 
 ![ci](https://github.com/filisko/absence-hours-reporting-bash/actions/workflows/main.yaml/badge.svg)
 
-Fully tested Bash tool to automatically register your breaks and working hours in absence.io.
+Fully tested Bash tool to automatically register your breaks and working hours in absence.io based on a JSON config file.
 
-## Setup
+## 🔧 Setup
 
 It requires the following binaries installed in your system (this is checked by the tool):
 - jq
@@ -13,7 +13,7 @@ It requires the following binaries installed in your system (this is checked by 
 - base64
 - date
 
-You probably already have base64 and date, to install the missing ones you can copy/paste:
+You may already have base64 and date, to install the missing ones you can copy/paste:
 
 <details>
 <summary>Mac OS</summary>
@@ -33,7 +33,7 @@ sudo apt-get install -y jq curl openssl
 
 </details>
 
-## Installation
+## ⚙️ Installation
 
 ```sh
 wget https://raw.githubusercontent.com/filisko/absence-hours-reporting-bash/refs/heads/main/src/absence.sh
@@ -44,13 +44,13 @@ After installing it an running it for the first time, it will create a **JSON co
 
 To find API's credentials, you can go to: Absence -> Profile -> Integrations -> API Key (ID/Key).
 
-## Usage
+## 🕹️ Usage
 
 There are 3 possible options to use the tool:
 
 ### Register your hours for current day
 
-It won't work on weekends as you probably don't want to register hours for the weekend).
+It won't work on weekends as you probably don't like to work and register hours on a weekend.
 
 ```sh
 absence.sh
@@ -62,7 +62,7 @@ Future hours registrations are not possible (Absence doesn't allow it) so it's s
 
 If you run it any day before Friday it will register the hours for the previous days (e.g.: if you run it on a Wednesday, hours are registered for Monday, Tuestay and Wednesday).
 
-Also, if you've registered your hours already for say, Tuesday, it will only throw an error for that day but that's it (there's no mechanism in the tool to check if the hours were already registered in Absence). 
+Also, if you've registered your hours already for some day, it will only throw an error for that day but it will continue processing the rest of the days (there's no mechanism in the tool to check if the hours were already registered in Absence). 
 
 ```sh
 absence.sh week
@@ -76,4 +76,7 @@ This option allows you to specify your own date range. Similar to the previous o
 absence.sh 2025-03-10 2025-03-13
 ```
 
-## License
+## 🧾 License
+
+This project is licensed under the MIT License (MIT). Please see [LICENSE](https://github.com/filisko/absence-hours-reporting-bash/blob/main/LICENSE)
+ for more information.
