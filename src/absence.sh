@@ -244,11 +244,19 @@ function get_date_monday() {
 }
 
 function is_valid_date() {
-    if [[ -z "$1" ]]; then
+    local input="$1"
+
+    if [[ -z "$input" ]]; then
         return 1
     fi
 
-    date -d "$1" "+%Y-%m-%d" &>/dev/null
+    if date --version >/dev/null 2>&1; then
+        # GNU date (Linux)
+        date -d "$input" "+%Y-%m-%d" &>/dev/null
+    else
+        # BSD date (macOS)
+        date -j -f "%Y-%m-%d" "$input" "+%Y-%m-%d" &>/dev/null
+    fi
 }
 
 function date_is_workable() {
