@@ -3,3 +3,4 @@
 .gitattributes
 tests
 watch.sh
+*.log

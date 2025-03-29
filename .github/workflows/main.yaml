@@ -24,6 +24,6 @@ jobs:
         curl -s https://bashunit.typeddevs.com/install.sh | bash
         chmod +x lib/bashunit  # Ensure script is executable
 
-    - name: 'run tests'
+    - name: 'run tests in parallel'
       run: |
-        $PWD/lib/bashunit --verbose tests || exit 1
+        ./tests.sh || exit 1

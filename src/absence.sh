@@ -51,6 +51,7 @@ str_pad() {
     echo "$padded_str"
   fi
 }
+
 success() {
     local check="✔"
     green $check
@@ -111,9 +112,10 @@ function create_config() {
 }
 
 function request() {
-    # store the response with the status code at the and
-    http_response=$(curl --silent --show-error --write-out "#HTTPSTATUS#:%{http_code}" "$@" 2>&1)
-    local curl_status=$?
+    # store the response with together with the status code at the and of the content on error
+    http_response=$(curl --max-time 3 --silent --show-error --write-out "#HTTPSTATUS#:%{http_code}" "$@" 2>&1)
+    curl_status=$?
+
 
     local http_body=$(echo $http_response | sed -E 's/#HTTPSTATUS#\:[0-9]{3}$//')
     local http_status=$(echo $http_response | tr -d '\n' | sed -E 's/.*#HTTPSTATUS#:([0-9]{3})$/\1/')
@@ -122,9 +124,10 @@ function request() {
     # bash's maximum status code is 255, so it doesn't make sense to return actual codes
     local short_http_status=${http_status:0:1}
 
-    if [ $curl_status -ne 0 ]; then
-        jq -n --arg status "$http_status" \
-            --arg body "$http_body" '{status: ($status | tonumber), body: $body}'
+    if [[ $curl_status -ne 0 ]]; then
+        jq="$(jq -njc --arg status "$curl_status" \
+            --arg body "$http_body" '{status: ($status | tonumber), body: $body}')"
+        printf "$jq"
         return $curl_status
     fi
 
@@ -132,50 +135,38 @@ function request() {
     if [ $short_http_status -eq 2 ]; then
         short_http_status=0
     else
-        jq -n --arg status "$http_status" \
-            --arg body "$http_body" '{status: ($status | tonumber), body: $body}'
+        jq="$(jq -njc --arg status "$http_status" \
+            --arg body "$http_body" '{status: ($status | tonumber), body: $body}')"
+        printf "$jq"
         return $short_http_status
     fi
 
     printf "$http_body"
-
     return $short_http_status
 }
+
+# request ifconfig.me
+# exit 1
 
 function generate_nonce() {
     openssl rand -hex 16
 }
 
-function api() {
-    local method="$1"
-    declare -a methods=("GET" "POST" "PUT" "PATCH" "DELETE")
-    local imploded_methods=$(IFS=","; echo "${methods[*]}")
-
-    local resource="$2"
-    local payload="$3"
-
-    if [[ ! "${methods[@]}" =~ "${method}" ]]; then
-        echo $(error; red 'HTTP method must be one of: '$imploded_methods'')
-        return 1
-    fi
-
-    if [[ -z $resource ]]; then
-        echo $(error; red 'The resource is required.')
-        return 1
-    fi
-
+function generate_hawk_header() {
     # auth
     local id=$(get_config_id)
     local key=$(get_config_key)
 
-    # request details
-    local host="app.absence.io"
-    local port="443"
-    local uri="/api/v2/$resource"
-    local url="https://app.absence.io/api/v2/$resource"
-
+    # hawk details
     local timestamp=$(date +%s)
     local nonce=$(generate_nonce)
+    
+    local method="$1"
+    local resource="$2"
+    local uri="/api/v2/$resource"
+    local host="app.absence.io"
+    local port="443"
+
 
     # new lines are critical
     local normalized_mac="hawk.1.header
@@ -191,10 +182,32 @@ $port
 
     mac=$(echo -n "$normalized_mac" | openssl dgst -sha256 -hmac "$key" -binary | base64)
 
-    hawk_header="Hawk id=\"$id\", ts=\"$timestamp\", nonce=\"$nonce\", mac=\"$mac\""
+    printf "Hawk id=\"$id\", ts=\"$timestamp\", nonce=\"$nonce\", mac=\"$mac\""
+}
+
+function api() {
+    local method="$1"
+    declare -a methods=("GET" "POST" "PUT" "PATCH" "DELETE")
+    local imploded_methods=$(IFS=","; echo "${methods[*]}")
+
+    local resource="$2"
+    local payload="$3"
+    local url="https://app.absence.io/api/v2/$resource"
+
+    if [[ ! "${methods[@]}" =~ "${method}" ]]; then
+        echo $(error; red 'HTTP method must be one of: '$imploded_methods'')
+        return 1
+    fi
+
+    if [[ -z $resource ]]; then
+        echo $(error; red 'The resource is required.')
+        return 1
+    fi
+
+    local hawk_header="$(generate_hawk_header "$method" "$resource")"
     
-    headers=(-H "Content-Type: application/json" -H "Authorization: $hawk_header")  
-    [[ -n $payload ]] && data=(-d "$payload")  
+    local headers=(-H "Content-Type: application/json" -H "Authorization: $hawk_header")  
+    [[ -n $payload ]] && local data=(-d "$payload")  
 
     request -X "$method" "${headers[@]}" "${data[@]}" "$url"
 }
@@ -468,6 +481,7 @@ function run() {
 
     create_remote_time_entries $today $today
 }
+
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     echo $(bold "📅 Absence.IO hours reporting tool v1.0.0") 
