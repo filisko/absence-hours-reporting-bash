@@ -2,7 +2,7 @@
 
 ![ci](https://github.com/filisko/absence-hours-reporting-bash/actions/workflows/main.yml/badge.svg)
 
-Fully tested Bash tool to register your breaks and working hours in absence.io.
+Fully tested Bash tool to automatically register your breaks and working hours in absence.io.
 
 ## Setup
 
@@ -48,7 +48,7 @@ To find API's credentials, you can go to: Absence -> Profile -> Integrations -> 
 
 There are 3 possible options to use the tool:
 
-### Register your hours for the day
+### Register your hours for current day
 
 It won't work on weekends as you probably don't want to register hours for the weekend).
 
