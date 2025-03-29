@@ -340,7 +340,7 @@ function create_remote_time_entries() {
             fi
         done
 
-        current_date=$(date -I -d "$current_date + 1 day")
+        current_date=$(add_days "$current_date" 1)
         echo ""
     done
 }
