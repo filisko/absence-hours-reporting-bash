@@ -29,4 +29,5 @@ jobs:
 
     - name: 'run tests in parallel'
       run: |
-        ./tests.sh || exit 1
+        mkdir -p coverage
+        kcov --include-pattern=your_script_dir coverage/ ./tests.sh
