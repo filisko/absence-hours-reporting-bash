@@ -5,7 +5,7 @@ if ! [[ "$OSTYPE" == "darwin"* ]] && ! [[ "$OSTYPE" == "linux"* ]]; then
     exit 1
 fi
 
-declare -a deps=("jq" "curl" "openssl" "base64" "date")
+declare -a deps=("jq" "curl" "openssl" "base64")
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   echo "MacOS was detected ..."
@@ -19,10 +19,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "checking if $dep is installed... "
     
     if ! brew ls --versions "$dep" > /dev/null; then
-      echo "installing "$dep" ..."
+      echo "installing $dep ..."
       brew install "$dep"
-    else
-      echo $(success) 
     fi
   done
 fi
