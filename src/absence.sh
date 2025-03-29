@@ -103,7 +103,7 @@ function create_config() {
         {
             "start": "15:00",
             "end": "17:00",
-            "type": "break"
+            "type": "work"
         }
     ]
 }
