@@ -78,5 +78,5 @@ absence.sh 2025-03-10 2025-03-13
 
 ## 🧾 License
 
-This project is licensed under the MIT License (MIT). Please see [LICENSE]([https://github.com/filisko/absence-hours-reporting-bash/LICENSE.md](https://github.com/filisko/absence-hours-reporting-bash/blob/main/LICENSE)
+This project is licensed under the MIT License (MIT). Please see [LICENSE](https://github.com/filisko/absence-hours-reporting-bash/blob/main/LICENSE)
  for more information.
