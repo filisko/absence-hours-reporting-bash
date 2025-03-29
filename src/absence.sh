@@ -155,12 +155,12 @@ function api() {
     local payload="$3"
 
     if [[ ! "${methods[@]}" =~ "${method}" ]]; then
-        echo "$(error; red 'HTTP method must be one of: '$imploded_methods'')"
+        echo $(error; red 'HTTP method must be one of: '$imploded_methods'')
         return 1
     fi
 
     if [[ -z $resource ]]; then
-        echo "$(error; red 'The resource is required.')"
+        echo $(error; red 'The resource is required.')
         return 1
     fi
 
@@ -276,24 +276,24 @@ function create_remote_time_entries() {
     declare -a types=("work" "break")
 
     if ! is_valid_date "$start_date" || ! is_valid_date "$end_date"; then
-        echo "$(error; red 'Start Date and End Date are required')"
+        echo $(error; red 'Start Date and End Date are required')
         return 1
     fi
 
     if [[ "$start_date" > "$end_date" ]]; then
-        echo "$(error; red 'Start Date cannot be greater than End Date')"
+        echo $(error; red 'Start Date cannot be greater than End Date')
         return 1
     fi
 
     if [[ ! "${types[@]}" =~ "${type}" ]]; then
-        echo "$(error; red 'Possible work types are: work, break')"
+        echo $(error; red 'Possible work types are: work, break')
         return 1
     fi
 
     local json_schedule="$(get_config_schedule)"
 
     if [[ $(echo "$json_schedule" | jq -r '. | length') -eq 0 ]]; then
-        echo "$(error; red 'Schedules list cannot be empty')"
+        echo $(error; red 'Schedules list cannot be empty')
         return 1
     fi
 
@@ -376,18 +376,16 @@ function check_dependencies() {
     declare -a missing=()
 
     for dep in "${deps[@]}"; do
-        echo -n $("Checking if $dep is installed... ")  
-          
-
-        if ! which "$dep" > /dev/null; then
+        if ! command -v "$dep" &> /dev/null; then
             missing=("${missing[@]}" "$dep")
         fi
     done
 
     if [[ ${#missing[@]} -ne 0 ]]; then
         local imploded_methods=$(IFS=","; echo "${missing[*]}")
-        echo $imploded_methods
-        
+
+        echo $(error; red "Dependencies missing: $imploded_methods")
+
         return 1
     fi
 }
