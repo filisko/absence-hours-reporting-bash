@@ -352,8 +352,8 @@ function create_remote_time_entries() {
             local start_datetime="${current_date}T${start}:00.000Z"
             local end_datetime="${current_date}T${end}:00.000Z"
             
-            local json_payload=$(jq -n --arg userId "$userId" --arg start "$start_datetime" \
-                --arg end "$end_datetime" --arg type "$type" \
+            local json_payload=$(jq -n --arg userId "$userId" '.userId = $userId' --arg start "$start_datetime" '.start = $start' \
+                --arg end "$end_datetime" '.end = $end' --arg type "$type" '.type = $type' \
                 '{
                     userId: $userId,
                     start: $start,
