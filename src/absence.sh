@@ -473,7 +473,7 @@ function run() {
         echo "$ absence.sh 2025-03-25 2025-03-28: Register time entries for a specific range."
         echo "$ absence.sh help: Shows this help."
         echo ""
-        echo "Please note all options are restricted to future dates by Absence"
+        echo "Please note all options are restricted to future dates by Absence."
         echo ""
         return 0
     fi
