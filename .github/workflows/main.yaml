@@ -21,6 +21,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install dependencies for kcov
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git cmake g++ libcurl4-openssl-dev libelf-dev libdw-dev libunwind-dev
+    
+    - name: Build and install kcov
+      run: |
+        git clone https://github.com/SimonKagstrom/kcov.git
+        cd kcov
+        mkdir build && cd build
+        cmake ..
+        make -j$(nproc)
+        sudo make install
+    
     - name: 'install bashunit and kcov'
       run: |
         #sudo apt update && sudo apt-get -y install kcov
@@ -31,4 +45,4 @@ jobs:
     - name: 'run tests in parallel'
       run: |
         mkdir -p coverage
-        ./tests.sh
+        kcov --include-pattern=./src coverage/ ./tests.sh
