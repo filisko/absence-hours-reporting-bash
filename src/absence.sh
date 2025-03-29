@@ -371,7 +371,7 @@ function add_days() {
 }
 
 function check_dependencies() {
-    declare -a deps=("jq" "curl" "openssl" "base64")
+    declare -a deps=("jq" "curl" "openssl" "base64" "date")
     
     declare -a missing=()
 

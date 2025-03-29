@@ -17,10 +17,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
   for dep in "${deps[@]}"; do
     echo "checking if $dep is installed... "
-    
-    if ! brew ls --versions "$dep" > /dev/null; then
-      echo "installing $dep ..."
-      brew install "$dep"
+
+    if ! command -v "$dep" &> /dev/null; then
+        echo "installing $dep ..."
+        brew install "$dep"
     fi
   done
 fi
@@ -38,9 +38,9 @@ if [[ "$OSTYPE" == "linux"* ]]; then
   for dep in "${deps[@]}"; do
     echo "checking if $dep is installed..."
     
-    if ! dpkg-query -l | grep "$dep" > /dev/null; then
-      echo "installing $dep ..."
-      sudo apt-get install -y "$dep"
+    if ! command -v "$dep" &> /dev/null; then
+        echo "installing $dep ..."
+        sudo apt-get install -y "$dep"
     fi
   done
 fi
