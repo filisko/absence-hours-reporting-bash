@@ -350,7 +350,16 @@ function today() {
 }
 
 function add_days() {
-    date -I -d "$1 + $2 days"
+    local input_date="$1"
+    local days="$2"
+
+    if date --version >/dev/null 2>&1; then
+        # GNU date (Linux)
+        date -I -d "$input_date +$days days"
+    else
+        # BSD date (macOS)
+        date -j -v+"$days"d -f "%Y-%m-%d" "$input_date" "+%Y-%m-%d"
+    fi
 }
 
 function run() {

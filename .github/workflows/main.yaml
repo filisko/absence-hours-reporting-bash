@@ -22,7 +22,8 @@ jobs:
       run: |
         mkdir lib
         curl -s https://bashunit.typeddevs.com/install.sh | bash
+        chmod +x lib/bashunit  # Ensure script is executable
 
     - name: 'run tests'
       run: |
-        $PWD/lib/bashunit tests
+        $PWD/lib/bashunit tests || exit 1
