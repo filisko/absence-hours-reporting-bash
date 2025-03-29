@@ -21,8 +21,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: 'install bashunit'
+    - name: 'install bashunit and kcov'
       run: |
+        apt-get install -y kcov
         mkdir lib
         curl -s https://bashunit.typeddevs.com/install.sh | bash
         chmod +x lib/bashunit  # Ensure script is executable
