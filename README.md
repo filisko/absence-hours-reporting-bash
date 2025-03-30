@@ -2,7 +2,7 @@
 
 ![ci](https://github.com/filisko/absence-hours-reporting-bash/actions/workflows/main.yaml/badge.svg)
 
-A robust and thoroughly tested Bash script to automatically register your breaks and working hours in absence.io.
+A robust and thoroughly tested Bash script to automatically register your breaks and working hours in absence.io for Mac OS and GNU/Linux.
 
 ## 🔧 Setup
 
