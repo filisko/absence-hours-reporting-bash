@@ -84,6 +84,34 @@ Shows a short description of all the available options.
 absence.sh help
 ```
 
+## 🤝 Contributing
+
+#### Clone:
+
+```sh
+git clone git@github.com:filisko/absence-hours-reporting-bash.git
+```
+
+#### Watch tests:
+
+This watches for changes either on the code or any of the tests.
+
+```sh
+# watch all tests
+./watch.sh tests
+
+# watch one specific test (probably what you want first)
+./watch.sh tests/run.test.sh
+```
+
+#### Run all tests:
+
+This script is used for GitHub actions. It runs all tests.
+
+```sh
+./tests.sh
+```
+
 ## 🧾 License
 
 This project is licensed under the MIT License (MIT). Please see [LICENSE](https://github.com/filisko/absence-hours-reporting-bash/blob/main/LICENSE)
