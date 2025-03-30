@@ -1,4 +1,4 @@
-# Absence.IO hours reporting tool
+# 📅 Absence.IO hours reporting tool
 
 ![ci](https://github.com/filisko/absence-hours-reporting-bash/actions/workflows/main.yaml/badge.svg)
 
