@@ -49,7 +49,20 @@ function test_daily_entry_creation() {
     assert_equals "Hi! 👋😊input params: 2025-03-26 2025-03-26" "$result"
 }
 
+function test_help() {
+    mock check_dependencies ok
+    mock config_exists ok
+
+    # Sunday
+    mock today "echo '2025-03-02'"
+
+    result="$(run help)"
+
+    assert_contains "Available options" "$result"
+}
+
 function test_daily_entry_creation_on_a_weekend() {
+    mock check_dependencies ok
     mock config_exists ok
     mock show_greetings ok
 
@@ -58,7 +71,7 @@ function test_daily_entry_creation_on_a_weekend() {
 
     result="$(run)"
 
-    assert_contains "Today should be a working day, try using the week option." "$result"
+    assert_contains "Today must be a working day" "$result"
 }
 
 function test_when_week_has_finished_entries_are_created_for_all_the_week() {
