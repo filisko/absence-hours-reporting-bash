@@ -2,7 +2,7 @@
 
 ![ci](https://github.com/filisko/absence-hours-reporting-bash/actions/workflows/main.yaml/badge.svg)
 
-Fully tested Bash tool to automatically register your breaks and working hours in absence.io based on a JSON config file.
+Robust and fully tested Bash tool to automatically register your breaks and working hours in absence.io.
 
 ## 🔧 Setup
 
