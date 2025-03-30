@@ -6,7 +6,7 @@ A robust and thoroughly tested Bash script to automatically register your breaks
 
 ## 🔧 Setup
 
-It requires the following binaries installed in your system (this is checked by the tool):
+The tool requires the following binaries installed in your system (this is checked by the tool):
 - jq
 - curl
 - openssl
