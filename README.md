@@ -108,7 +108,7 @@ This watches for changes either on the code or any of the tests.
 # watch all tests
 ./watch.sh tests
 
-# watch one specific test (probably what you want first)
+# watch one specific test (probably what you want at first)
 ./watch.sh tests/run.test.sh
 ```
 
