@@ -92,6 +92,14 @@ absence.sh help
 git clone git@github.com:filisko/absence-hours-reporting-bash.git
 ```
 
+### Install BashUnit:
+
+```sh
+mkdir lib
+curl -s https://bashunit.typeddevs.com/install.sh | bash
+chmod +x lib/bashunit
+```
+
 ### Watch & Run the tests:
 
 This watches for changes either on the code or any of the tests.
