@@ -86,13 +86,13 @@ absence.sh help
 
 ## 🤝 Contributing
 
-#### Clone:
+### Clone the project:
 
 ```sh
 git clone git@github.com:filisko/absence-hours-reporting-bash.git
 ```
 
-#### Watch tests:
+### Watch & Run the tests:
 
 This watches for changes either on the code or any of the tests.
 
@@ -104,7 +104,7 @@ This watches for changes either on the code or any of the tests.
 ./watch.sh tests/run.test.sh
 ```
 
-#### Run all tests:
+### Run all tests:
 
 This script is used for GitHub actions. It runs all tests.
 
