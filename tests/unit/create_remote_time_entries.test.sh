@@ -50,8 +50,6 @@ function test_schedule_entries_are_created() {
 
     result="$(create_remote_time_entries "2023-10-01" "2023-10-02")"
 
-    assert_contains "Date range: 2023-10-01 to 2023-10-02" "$result"
-
     assert_contains "Date: 2023-10-01" "$result"
     assert_contains "Creating work entry from 09:00 to 12:00" "$result"
     assert_contains "Creating break entry from 12:00 to 13:00" "$result"
@@ -67,7 +65,6 @@ function test_when_there_is_an_api_422_error() {
 
     result="$(create_remote_time_entries "2023-10-01" "2023-10-01")"
 
-    assert_contains "Date range: 2023-10-01 to 2023-10-01" "$result"
     assert_contains "Date: 2023-10-01" "$result"
     assert_contains "Validation error (422)" "$result"
 }

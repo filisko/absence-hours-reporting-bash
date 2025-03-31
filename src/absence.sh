@@ -354,9 +354,6 @@ function create_remote_time_entries() {
 
     local userId=$(get_config_id)
 
-    echo "Date range: $start_date to $end_date"
-    echo ""
-
     current_date="$start_date"
 
     while [[ "$current_date" < "$end_date" ]] || [[ "$current_date" == "$end_date" ]]; do
