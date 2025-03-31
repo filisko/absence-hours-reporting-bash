@@ -252,8 +252,8 @@ function show_greetings() {
     status=$?
 
     if [ $status -ne 0 ]; then
-        http_status="$(echo -n "$response" | jq -r '.status')"
-        http_body="$(echo -n "$response" | jq -r '.body')"
+        http_status="$(echo -n "$response" | jq -r '.status' &> /dev/null)"
+        http_body="$(echo -n "$response" | jq -r '.body' &> /dev/null)"
 
         if [[ $http_status -eq 401 ]]; then
             echo $(error; red "Unauthorized (401) error: Please check your credentials")
@@ -421,12 +421,12 @@ function create_remote_time_entries() {
         absences_count="$(get_absences_count "$current_date" "$current_date")"
         absences_count_status=$?
         if [[ $absences_count_status -eq 0 ]] && [[ $absences_count -gt 0 ]]; then
-            echo "$(red "┈➤ There were absences found: $absences_count.")"
+            echo "$(red "╰➤ There were absences found: $absences_count.")"
             current_date=$(add_days "$current_date" 1)
             echo ""
             continue
         elif [[ $absences_count_status -ne 0 ]]; then
-            echo "$(red "┈➤ There was an error making the API call to get the absences:")"
+            echo "$(red "╰➤ There was an error making the API call to get the absences:")"
             echo "$absences_count"
             echo ""
             current_date=$(add_days "$current_date" 1)
@@ -450,7 +450,7 @@ function create_remote_time_entries() {
                     end: $end,
                     type: $type,
                     source: { sourceType: "browser", sourceId: "manual" },
-                    timezone: $timezone,
+                    timezone: $timezone
                 }')
 
             echo -n "╰➤ $(str_pad "Creating $type entry from $start to $end" 41) "
@@ -459,8 +459,8 @@ function create_remote_time_entries() {
             code=$?
 
             if [ $code -ne 0 ]; then
-                http_status="$(echo -n "$response" | jq -r '.status')"
-                http_body="$(echo -n "$response" | jq -r '.body')"
+                http_status="$(echo -n "$response" | jq -r '.status' &> /dev/null)"
+                http_body="$(echo -n "$response" | jq -r '.body' &> /dev/null)"
 
                 if [[ $http_status -eq 422 ]]; then
                     echo "$(red "┈➤ Validation error (422). The response:")"
