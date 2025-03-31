@@ -137,7 +137,6 @@ function request() {
     http_response=$(curl --max-time 3 --silent --show-error --write-out "#HTTPSTATUS#:%{http_code}" "$@" 2>&1)
     curl_status=$?
 
-
     local http_body=$(echo $http_response | sed -E 's/#HTTPSTATUS#\:[0-9]{3}$//')
     local http_status=$(echo $http_response | tr -d '\n' | sed -E 's/.*#HTTPSTATUS#:([0-9]{3})$/\1/')
     
