@@ -56,7 +56,7 @@ It won't work on weekends as you probably don't like to work and register hours 
 absence.sh
 ```
 
-### Register the hours for the whole week
+### Register your hours for the whole week
 
 Future hours registrations are not possible (Absence doesn't allow it) so it's suggested that you run it by the end of the week, Friday after finishing your working hours or the weekend.
 
