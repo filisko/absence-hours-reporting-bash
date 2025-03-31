@@ -86,6 +86,37 @@ Shows a short description of all the available options.
 absence.sh help
 ```
 
+#### Output example
+
+```text
+📅 Absence.IO hours reporting tool v1.0.1
+
+Hi Filis Futsarov! 👋😊
+
+Date: 2025-03-24
+╰➤ Creating work entry from 08:00 to 14:00   ✔
+╰➤ Creating break entry from 14:00 to 15:00  ✔
+╰➤ Creating work entry from 15:00 to 17:00   ✔
+
+Date: 2025-03-25
+╰➤ Creating work entry from 08:00 to 14:00   ✔
+╰➤ Creating break entry from 14:00 to 15:00  ✔
+╰➤ Creating work entry from 15:00 to 17:00   ✔
+
+Date: 2025-03-26
+╰➤ Creating work entry from 08:00 to 14:00   ✔
+╰➤ Creating break entry from 14:00 to 15:00  ✔
+╰➤ Creating work entry from 15:00 to 17:00   ✔
+
+Date: 2025-03-27
+╰➤ There were absences found: 1.
+
+Date: 2025-03-28
+╰➤ Creating work entry from 08:00 to 14:00   ✔
+╰➤ Creating break entry from 14:00 to 15:00  ✔
+╰➤ Creating work entry from 15:00 to 17:00   ✔
+```
+
 ## 🤝 Contributing
 
 ### Clone the project:
