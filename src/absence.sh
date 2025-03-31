@@ -107,10 +107,14 @@ function get_config_schedule() {
     jq -r .schedule "$DIR/absence.json"
 }
 
+function get_config_timezone() {
+    jq -r .timezone "$DIR/absence.json"
+}
+
 function create_config() {
     echo '{
-    "id": "fill",
-    "key": "fill",
+    "id": "<fill>",
+    "key": "<fill>",
     "schedule": [
         {
             "start": "08:00",
@@ -127,7 +131,8 @@ function create_config() {
             "end": "17:00",
             "type": "work"
         }
-    ]
+    ],
+    "timezone": "+0100"
 }
 ' > "$DIR/absence.json"
 }
@@ -136,6 +141,7 @@ function request() {
     # store the response with together with the status code at the and of the content on error
     http_response=$(curl --max-time 3 --silent --show-error --write-out "#HTTPSTATUS#:%{http_code}" "$@" 2>&1)
     curl_status=$?
+
 
     local http_body=$(echo $http_response | sed -E 's/#HTTPSTATUS#\:[0-9]{3}$//')
     local http_status=$(echo $http_response | tr -d '\n' | sed -E 's/.*#HTTPSTATUS#:([0-9]{3})$/\1/')
@@ -318,9 +324,55 @@ function date_is_workable() {
     fi
     
     # Check if it's Saturday (6) or Sunday (7)
-    if [[ "$day_of_week" -eq 6 ]] || [[ "$day_of_week" -eq 7 ]]; then
+    if [[ "$day_of_week" -gt 5 ]]; then
         return 1
     fi
+}
+
+function get_absences_count() {
+    local start_date="$1"
+    local end_date="$2"
+
+    if ! is_valid_date "$start_date" || ! is_valid_date "$end_date"; then
+        echo "$(error; red 'Start Date and End Date are required')"
+        return 1
+    fi
+
+    if [[ "$start_date" > "$end_date" ]]; then
+        echo "$(error; red 'Start Date cannot be greater than End Date')"
+        return 1
+    fi
+
+    local userId=$(get_config_id)
+
+    local start_datetime="${start_date}T00:00:00.000Z"
+    local end_datetime="${end_date}T00:00:00.000Z"
+
+    local json_payload=$(jq -n --arg userId "$userId" \
+        --arg start "$start_datetime" --arg end "$end_datetime" '{
+    skip: 0,
+    limit: 100,
+    filter: {
+        assignedToId: $userId,
+        start: {"$gte": $start},
+        end: {"$lte": $end},
+    },
+    relations: ["asssignedToId"]
+}')
+
+    response=$(api "POST" "absences" "$json_payload")
+    status=$?
+
+    if [ $status -ne 0 ]; then
+        http_status="$(echo -n "$response" | jq -r '.status' &> /dev/null)"
+        http_body="$(echo -n "$response" | jq -r '.body' &> /dev/null)"
+
+        echo $(error; red "API error: Don't know how to handle it.")
+        echo "$response"
+        return 5
+    fi
+
+    echo "$response" | jq -r '.count'
 }
 
 function create_remote_time_entries() {
@@ -330,17 +382,17 @@ function create_remote_time_entries() {
     declare -a types=("work" "break")
 
     if ! is_valid_date "$start_date" || ! is_valid_date "$end_date"; then
-        echo $(error; red 'Start Date and End Date are required')
+        echo "$(error; red 'Start Date and End Date are required')"
         return 1
     fi
 
     if [[ "$start_date" > "$end_date" ]]; then
-        echo $(error; red 'Start Date cannot be greater than End Date')
+        echo "$(error; red 'Start Date cannot be greater than End Date')"
         return 1
     fi
 
     if [[ ! "${types[@]}" =~ "${type}" ]]; then
-        echo $(error; red 'Possible work types are: work, break')
+        echo "$(error; red 'Possible work types are: work, break')"
         return 1
     fi
 
@@ -352,11 +404,34 @@ function create_remote_time_entries() {
     fi
 
     local userId=$(get_config_id)
+    local timezone=$(get_config_timezone)
 
-    current_date="$start_date"
+    local current_date="$start_date"
 
     while [[ "$current_date" < "$end_date" ]] || [[ "$current_date" == "$end_date" ]]; do
         echo "Date: $current_date"
+
+        if ! date_is_workable "$current_date"; then
+            echo $(red "┈➤ It is not a working day (weekend).")
+            current_date=$(add_days "$current_date" 1)
+            echo ""
+            continue
+        fi
+
+        absences_count="$(get_absences_count "$current_date" "$current_date")"
+        absences_count_status=$?
+        if [[ $absences_count_status -eq 0 ]] && [[ $absences_count -gt 0 ]]; then
+            echo "$(red "┈➤ There were absences found: $absences_count.")"
+            current_date=$(add_days "$current_date" 1)
+            echo ""
+            continue
+        elif [[ $absences_count_status -ne 0 ]]; then
+            echo "$(red "┈➤ There was an error making the API call to get the absences:")"
+            echo "$absences_count"
+            echo ""
+            current_date=$(add_days "$current_date" 1)
+            continue
+        fi
 
         echo "$json_schedule" | jq -c '.[]' | while read -r entry; do
             start=$(echo "$entry" | jq -r '.start')
@@ -368,12 +443,14 @@ function create_remote_time_entries() {
             
             local json_payload=$(jq -n --arg userId "$userId" --arg start "$start_datetime" \
                 --arg end "$end_datetime" --arg type "$type" \
+                --arg timezone "$timezone" \
                 '{
                     userId: $userId,
                     start: $start,
                     end: $end,
                     type: $type,
-                    source: { sourceType: "browser", sourceId: "manual" }
+                    source: { sourceType: "browser", sourceId: "manual" },
+                    timezone: $timezone,
                 }')
 
             echo -n "╰➤ $(str_pad "Creating $type entry from $start to $end" 41) "
@@ -386,12 +463,12 @@ function create_remote_time_entries() {
                 http_body="$(echo -n "$response" | jq -r '.body')"
 
                 if [[ $http_status -eq 422 ]]; then
-                    echo $(red "┈➤ Validation error (422). The response:")
+                    echo "$(red "┈➤ Validation error (422). The response:")"
                     echo "$http_body" | jq
                 elif [[ $http_status -eq 412 ]]; then
-                    echo $(red "┈➤ Precondition Failed (412) error: $http_body") 
+                    echo "$(red "┈➤ Precondition Failed (412) error: $http_body")"
                 else
-                    echo $(red "┈➤ $http_status error: Don't know how to handle it") 
+                    echo "$(red "┈➤ $http_status error: Don't know how to handle it")"
                     echo "Response: $response"
                 fi
             else
@@ -520,7 +597,7 @@ function run() {
 
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    echo $(bold "📅 Absence.IO hours reporting tool v1.0.0") 
+    echo $(bold "📅 Absence.IO hours reporting tool v1.0.1") 
     echo ""
 
     run $@

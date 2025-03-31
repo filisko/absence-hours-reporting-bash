@@ -26,7 +26,6 @@ function test_when_start_date_is_greater_than_end_date() {
     assert_contains "Start Date cannot be greater than End Date" "$result"
 }
 
-
 function test_when_type_is_in_invalid_returns_an_error() {
     
     result="$(create_remote_time_entries "2023-10-01" "2023-10-01" "invalid")"
@@ -37,7 +36,7 @@ function test_when_type_is_in_invalid_returns_an_error() {
 function test_when_schedules_is_empty_returns_an_error() {
     mock get_config_schedule "echo '[]'"
     
-    result="$(create_remote_time_entries "2023-10-01" "2023-10-01")"
+    result="$(create_remote_time_entries "2025-03-01" "2025-03-01")"
 
     assert_contains "Schedules list cannot be empty" "$result"
 }
@@ -45,49 +44,161 @@ function test_when_schedules_is_empty_returns_an_error() {
 function test_schedule_entries_are_created() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"12:00\", \"type\": \"work\"}, {\"start\": \"12:00\", \"end\": \"13:00\", \"type\": \"break\"}]'"
     mock get_config_id 'echo "123456"'
+    mock get_config_timezone 'printf "+0100"'
+    mock get_absences_count 'printf "0"'
 
     mock api "echo '{\"status\": 200, \"body\": null}'"
 
-    result="$(create_remote_time_entries "2023-10-01" "2023-10-02")"
+    result="$(create_remote_time_entries "2025-03-03" "2025-03-04")"
 
-    assert_contains "Date: 2023-10-01" "$result"
+    assert_contains "Date: 2025-03-03" "$result"
     assert_contains "Creating work entry from 09:00 to 12:00" "$result"
     assert_contains "Creating break entry from 12:00 to 13:00" "$result"
 
-    assert_contains "Date: 2023-10-02" "$result"
+    assert_contains "Date: 2025-03-04" "$result"
+}
+
+function test_valid_json_payload_is_sent() {
+    mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"12:00\", \"type\": \"work\"}, {\"start\": \"12:00\", \"end\": \"13:00\", \"type\": \"break\"}]'"
+    mock get_config_id 'echo "123456"'
+    mock get_config_timezone 'printf "+0100"'
+    mock get_absences_count 'printf "0"'
+
+    mock api 'echo "input params $@"; return 5'
+
+    result="$(create_remote_time_entries "2025-03-03" "2025-03-04")"
+
+    assert_contains "POST timespans/create" "$result"
+
+    assert_contains '"userId": "123456"' "$result"
+    assert_contains '"type": "break"' "$result"
+    assert_contains '"sourceId": "manual"' "$result"
+    assert_contains '"sourceType": "browser"' "$result"
+    assert_contains '"timezone": "+0100"' "$result"
+
+    assert_contains "Creating work entry from 09:00 to 12:00" "$result"
+    assert_contains 'POST timespans/create {
+  "userId": "123456",
+  "start": "2025-03-03T09:00:00.000Z",
+  "end": "2025-03-03T12:00:00.000Z",
+  "type": "work",
+  "source": {
+    "sourceType": "browser",
+    "sourceId": "manual"
+  },
+  "timezone": "+0100"
+}' "$result"
+    assert_contains 'POST timespans/create {
+  "userId": "123456",
+  "start": "2025-03-04T09:00:00.000Z",
+  "end": "2025-03-04T12:00:00.000Z",
+  "type": "work",
+  "source": {
+    "sourceType": "browser",
+    "sourceId": "manual"
+  },
+  "timezone": "+0100"
+}' "$result"
+
+    assert_contains "Creating break entry from 12:00 to 13:00" "$result"
+    assert_contains 'POST timespans/create {
+  "userId": "123456",
+  "start": "2025-03-03T12:00:00.000Z",
+  "end": "2025-03-03T13:00:00.000Z",
+  "type": "break",
+  "source": {
+    "sourceType": "browser",
+    "sourceId": "manual"
+  },
+  "timezone": "+0100"
+}' "$result"
+    assert_contains 'POST timespans/create {
+  "userId": "123456",
+  "start": "2025-03-04T12:00:00.000Z",
+  "end": "2025-03-04T13:00:00.000Z",
+  "type": "break",
+  "source": {
+    "sourceType": "browser",
+    "sourceId": "manual"
+  },
+  "timezone": "+0100"
+}' "$result"
+}
+
+function test_when_current_day_is_a_weekend_it_is_skept() {
+    mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
+    mock get_config_id 'echo "123456"'
+    mock get_config_timezone 'printf "+0100"'
+
+    mock api "echo '{\"status\": 422, \"body\": null}'; return 4"
+
+    result="$(create_remote_time_entries "2025-03-01" "2025-03-01")"
+
+    assert_contains "Date: 2025-03-01" "$result"
+    assert_contains "It is not a working day (weekend)." "$result"
+}
+
+function test_when_current_day_has_absences_it_is_skept() {
+    mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
+    mock get_config_id 'echo "123456"'
+    mock get_config_timezone 'printf "+0100"'
+    mock get_absences_count 'printf "1"'
+
+    result="$(create_remote_time_entries "2025-03-04" "2025-03-04")"
+
+    assert_contains "There were absences found: 1." "$result"
+}
+
+function test_when_getting_absences_fail() {
+    mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
+    mock get_config_id 'echo "123456"'
+    mock get_config_timezone 'printf "+0100"'
+    mock get_absences_count 'echo "some good error"; return 5'
+
+    result="$(create_remote_time_entries "2025-03-04" "2025-03-04")"
+
+    assert_contains "There was an error making the API call to get the absences" "$result"
+    assert_contains "some good error" "$result"
 }
 
 function test_when_there_is_an_api_422_error() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
-    
+    mock get_config_timezone 'printf "+0100"'
+    mock get_absences_count 'printf "0"'
+
     mock api "echo '{\"status\": 422, \"body\": null}'; return 4"
 
-    result="$(create_remote_time_entries "2023-10-01" "2023-10-01")"
+    result="$(create_remote_time_entries "2025-03-03" "2025-03-03")"
 
-    assert_contains "Date: 2023-10-01" "$result"
+    assert_contains "Date: 2025-03-03" "$result"
     assert_contains "Validation error (422)" "$result"
 }
 
 function test_when_there_is_an_api_412_error() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
+    mock get_config_timezone 'printf "+0100"'
+    mock get_absences_count 'printf "0"'
     
     mock api "echo '{\"status\": 412, \"body\": \"Entries cannot overlap\"}'; return 4"
 
-    result="$(create_remote_time_entries "2023-10-01" "2023-10-01")"
 
+    result="$(create_remote_time_entries "2025-03-03" "2025-03-03")"
+
+    assert_contains "Date: 2025-03-03" "$result"
     assert_contains "Precondition Failed (412) error: Entries cannot overlap" "$result"
 }
 
 function test_when_there_is_an_api_500_error() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
-    
+    mock get_config_timezone 'printf "+0100"'
+    mock get_absences_count 'printf "0"'
+
     mock api "echo '{\"status\": 500, \"body\": \"Internal error\"}'; return 5"
 
-    result="$(create_remote_time_entries "2023-10-01" "2023-10-01")"
+    result="$(create_remote_time_entries "2025-03-03" "2025-03-04")"
 
     assert_contains "500 error: Don't know how to handle it" "$result"
 }
-
