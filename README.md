@@ -40,7 +40,7 @@ wget https://raw.githubusercontent.com/filisko/absence-hours-reporting-bash/refs
 chmod +x absence.sh
 ```
 
-After installing it an running it for the first time, it will create a **JSON config file** where you have to put your **Absence API ID and Key, and configure your day schedule**.
+After installing it an running it for the first time, it will create a **JSON config file** where you have to put your **Absence API ID and Key, configure your day schedule and your time zone**.
 
 To find API's credentials, you can go to: Absence -> Profile -> Integrations -> API Key (ID/Key).
 
