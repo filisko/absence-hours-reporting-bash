@@ -40,17 +40,19 @@ wget https://raw.githubusercontent.com/filisko/absence-hours-reporting-bash/refs
 chmod +x absence.sh
 ```
 
-After installing it an running it for the first time, it will create a **JSON config file** where you have to put your **Absence API ID and Key, and configure your day schedule**.
+After installing it an running it for the first time, it will create a **JSON config file** where you have to put your **Absence API ID and Key, configure your day schedule and your time zone**.
 
 To find API's credentials, you can go to: Absence -> Profile -> Integrations -> API Key (ID/Key).
 
 ## 🕹️ Usage
 
-There are 3 possible options to use the tool:
-
 ### Register your hours for current day
 
-It won't work on weekends as you probably don't like to work and register hours on a weekend.
+Restrictions:
+- It won't allow you to submit the hours on weekends as you probably don't want that.
+- Future dates are not possible (restricted by Absence).
+- Days with registered Absences (sickness, vacation, etc.) are skipped (an error will popup).
+- Days with already registered hours are skipped (an error will popup).
 
 ```sh
 absence.sh
@@ -58,11 +60,9 @@ absence.sh
 
 ### Register your hours for the whole week
 
-Future hours registrations are not possible (Absence doesn't allow it) so it's suggested that you run it by the end of the week, Friday after finishing your working hours or the weekend.
+With the same restrictions as the previous one.
 
 If you run it any day before Friday it will register the hours for the previous days (e.g.: if you run it on a Wednesday, hours are registered for Monday, Tuestay and Wednesday).
-
-Also, if you've registered your hours already for some day, it will only throw an error for that day but it will continue processing the rest of the days (there's no mechanism in the tool to check if the hours were already registered in Absence). 
 
 ```sh
 absence.sh week
@@ -70,7 +70,9 @@ absence.sh week
 
 ### Register a date range
 
-This option allows you to specify your own date range. Similar to the previous option, future hours registrations are not possible.
+With the same restrictions as the previous one.
+
+This option allows you to specify your own dates range.
 
 ```sh
 absence.sh 2025-03-10 2025-03-13
