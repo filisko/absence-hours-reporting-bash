@@ -86,9 +86,8 @@ Shows a short description of all the available options.
 absence.sh help
 ```
 
----
 
-### Output example
+## 👓 Output example
 
 ```text
 📅 Absence.IO hours reporting tool v1.0.1
