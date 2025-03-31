@@ -125,7 +125,7 @@ function test_valid_json_payload_is_sent() {
 }' "$result"
 }
 
-function test_when_current_day_is_a_weekend_it_is_skept() {
+function test_when_current_day_is_a_weekend_it_is_skipped() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
     mock get_config_timezone 'printf "+0100"'
@@ -138,7 +138,7 @@ function test_when_current_day_is_a_weekend_it_is_skept() {
     assert_contains "It is not a working day (weekend)." "$result"
 }
 
-function test_when_current_day_has_absences_it_is_skept() {
+function test_when_current_day_has_absences_it_is_skipped() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
     mock get_config_timezone 'printf "+0100"'
