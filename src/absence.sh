@@ -166,9 +166,6 @@ function request() {
     return $short_http_status
 }
 
-# request ifconfig.me
-# exit 1
-
 function generate_nonce() {
     openssl rand -hex 16
 }
