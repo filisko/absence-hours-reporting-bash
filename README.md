@@ -130,9 +130,7 @@ git clone git@github.com:filisko/absence-hours-reporting-bash.git
 ### Install BashUnit:
 
 ```sh
-mkdir lib
-curl -s https://bashunit.typeddevs.com/install.sh | bash
-chmod +x lib/bashunit
+./install_bashunit.sh
 ```
 
 ### Watch & Run the tests:
