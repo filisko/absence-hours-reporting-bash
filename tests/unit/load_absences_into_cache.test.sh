@@ -57,11 +57,11 @@ function test_valid_json_payload_is_sent() {
 
     mock api 'echo "input params $@"; return 5'
 
-    result="$(load_absences_into_cache "2025-04-01")"
+    result="$(load_absences_into_cache)"
 
     assert_contains 'input params POST absences {
   "skip": 0,
-  "limit": 100,
+  "limit": 1000,
   "filter": {
     "assignedToId": "123456"
   }

@@ -25,7 +25,7 @@ function test_valid_json_payload_is_sent() {
 
     assert_contains 'input params POST users {
   "skip": 0,
-  "limit": 100,
+  "limit": 1000,
   "filter": {
     "_id": "123456"
   },

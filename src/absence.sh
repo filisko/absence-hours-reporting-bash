@@ -246,7 +246,7 @@ function get_remote_user() {
 
     local json_payload=$(jq -n --arg userId "$id" '{
     skip: 0,
-    limit: 100,
+    limit: 1000,
     filter: {
         _id: $userId
     },
@@ -366,10 +366,9 @@ function date_is_workable() {
 function load_absences_into_cache() {
     local userId=$(get_config_id)
     
-    local json_payload=$(jq -n --arg userId "$userId" \
-        --arg start "$start_datetime" '{
+    local json_payload=$(jq -n --arg userId "$userId" '{
     skip: 0,
-    limit: 100,
+    limit: 1000,
     filter: {
         assignedToId: $userId
     }
