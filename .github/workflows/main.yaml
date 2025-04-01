@@ -23,9 +23,7 @@ jobs:
 
     - name: 'install bashunit'
       run: |
-        mkdir lib
-        curl -s https://bashunit.typeddevs.com/install.sh | bash
-        chmod +x lib/bashunit
+        - ./install_bashunit.sh
 
     - name: Run tests
       run: |

@@ -52,6 +52,7 @@ Restrictions:
 - It won't allow you to submit the hours on weekends as you probably don't want that.
 - Future dates are not possible (restricted by Absence).
 - Days with registered Absences (sickness, vacation, etc.) are skipped (an error will popup).
+- Days with Holidays are skipped (an error will popup).
 - Days with already registered hours are skipped (an error will popup).
 
 ```sh

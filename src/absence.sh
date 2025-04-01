@@ -244,16 +244,35 @@ function api() {
 function get_remote_user() {
     local id=$(get_config_id)
 
-    api "GET" "users/$id"
+    local json_payload=$(jq -n --arg userId "$id" '{
+    skip: 0,
+    limit: 100,
+    filter: {
+        _id: $userId
+    },
+    relations: ["holidayIds"]
+}')
+
+    response="$(api "POST" "users" "$json_payload")"
+    status=$?
+
+    if [[ $status -ne 0 ]]; then
+        printf "$response"
+        return $status
+    fi
+
+    printf "$response" | jq -cr '.data[0]' 2> /dev/null
+
+    return $status
 }
 
 function show_greetings() {
-    response="$(get_remote_user)"
+    user="$(get_remote_user)"
     status=$?
 
     if [ $status -ne 0 ]; then
-        http_status="$(echo -n "$response" | jq -r '.status' 2> /dev/null)"
-        http_body="$(echo -n "$response" | jq -r '.body' 2> /dev/null)"
+        http_status="$(echo -n "$user" | jq -r '.status' 2> /dev/null)"
+        http_body="$(echo -n "$user" | jq -r '.body' 2> /dev/null)"
 
         if [[ $http_status -eq 401 ]]; then
             echo $(error; red "Unauthorized (401) error: Please check your credentials")
@@ -261,18 +280,33 @@ function show_greetings() {
             return 4
         else
             echo $(error; red "$http_status error: Don't know how to handle it") 
-            echo "Response: $response"
+            echo "Response: $user"
             return 5
         fi
     fi
 
-    name=$(printf "$(echo "$response" | jq -r '.name')")
+    name=$(printf "$(echo "$user" | jq -r '.name')")
+
+    HOLIDAYS_CACHE="$(printf "$user" | jq -c '.holidays[] | {name,dates}')"
 
     echo $(bold_green "Hi $name! 👋😊")
 }
 
+function get_holiday() {
+    if ! is_valid_date "$1"; then
+        echo "$(error; red 'A valid date is required')"
+        return 1
+    fi
+
+    local date="${1}T00:00:00.000Z"
+
+    echo $HOLIDAYS_CACHE | jq -c ". | select( .dates | index(\"$date\") )" | while read -r holiday; do
+        printf "$holiday" | jq -r '.name'
+    done
+}
+
 function get_date_monday() {
-    date_to_check="$1"
+    local date_to_check="$1"
 
     if date --version >/dev/null 2>&1; then
         # GNU date (Linux)
@@ -329,35 +363,16 @@ function date_is_workable() {
     fi
 }
 
-function get_absences_count() {
-    local start_date="$1"
-    local end_date="$2"
-
-    if ! is_valid_date "$start_date" || ! is_valid_date "$end_date"; then
-        echo "$(error; red 'Start Date and End Date are required')"
-        return 1
-    fi
-
-    if [[ "$start_date" > "$end_date" ]]; then
-        echo "$(error; red 'Start Date cannot be greater than End Date')"
-        return 1
-    fi
-
+function load_absences_into_cache() {
     local userId=$(get_config_id)
-
-    local start_datetime="${start_date}T00:00:00.000Z"
-    local end_datetime="${end_date}T00:00:00.000Z"
-
+    
     local json_payload=$(jq -n --arg userId "$userId" \
-        --arg start "$start_datetime" --arg end "$end_datetime" '{
+        --arg start "$start_datetime" '{
     skip: 0,
     limit: 100,
     filter: {
-        assignedToId: $userId,
-        start: {"$gte": $start},
-        end: {"$lte": $end},
-    },
-    relations: ["asssignedToId"]
+        assignedToId: $userId
+    }
 }')
 
     response=$(api "POST" "absences" "$json_payload")
@@ -372,7 +387,26 @@ function get_absences_count() {
         return 5
     fi
 
-    echo "$response" | jq -r '.count'
+    ABSENCES_CACHE="$(printf "$response" | jq -c '.data')"
+}
+
+function date_has_absences() {
+    local start_date="$1"
+
+    if ! is_valid_date "$start_date"; then
+        echo "$(error; red 'The start date must be valid')"
+        return 1
+    fi
+
+    # Check if the date exists in any of the "days" arrays in ABSENCES_CACHE
+    result=$(echo "$ABSENCES_CACHE" | jq --arg date "${start_date}T00:00:00.000Z" \
+        '[.[] | .days[] | .date] | index($date) != null')
+
+    if [[ $result == "true" ]]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 function create_remote_time_entries() {
@@ -407,27 +441,33 @@ function create_remote_time_entries() {
     local timezone=$(get_config_timezone)
 
     local current_date="$start_date"
+    load_absences_into_cache
+    if [[ $? -ne 0 ]]; then
+        echo $(red "Failed to load absences into cache.")
+        echo "$load_absences"
+        return 1
+    fi
 
     while [[ "$current_date" < "$end_date" ]] || [[ "$current_date" == "$end_date" ]]; do
         echo "Date: $current_date"
 
         if ! date_is_workable "$current_date"; then
-            echo $(red "╰➤  It is not a working day (weekend).")
+            echo $(red "╰➤ It is not a working day (weekend).")
             current_date=$(add_days "$current_date" 1)
             echo ""
             continue
         fi
 
-        absences_count="$(get_absences_count "$current_date" "$current_date")"
-        absences_count_status=$?
-        if [[ $absences_count_status -eq 0 ]] && [[ $absences_count -gt 0 ]]; then
-            echo "$(red "╰➤  There were absences found: $absences_count.")"
+        if date_has_absences "$current_date"; then
+            echo "$(red "╰➤  There were absences found.")"
             current_date=$(add_days "$current_date" 1)
             echo ""
             continue
-        elif [[ $absences_count_status -ne 0 ]]; then
-            echo "$(red "╰➤  There was an error making the API call to get the absences:")"
-            echo "$absences_count"
+        fi
+
+        local holidays="$(get_holiday $current_date)"
+        if [ -n "$holidays" ]; then
+            echo $(red "╰➤ It is not a working day. Found holidays: $holidays")
             echo ""
             current_date=$(add_days "$current_date" 1)
             continue
@@ -518,6 +558,8 @@ function check_dependencies() {
     fi
 }
 
+HOLIDAYS_CACHE=""
+ABSENCES_CACHE=""
 function run() {
     check_dependencies
     if [[ $? -ne 0 ]]; then
