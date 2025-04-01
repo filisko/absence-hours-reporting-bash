@@ -23,7 +23,7 @@ jobs:
 
     - name: 'install bashunit'
       run: |
-        - ./install_bashunit.sh
+        ./install_bashunit.sh
 
     - name: Run tests
       run: |
