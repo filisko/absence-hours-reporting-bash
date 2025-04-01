@@ -53,7 +53,7 @@ Restrictions:
 - Future dates are not possible (restricted by Absence).
 - Days with registered Absences (sickness, vacation, etc.) are skipped (an error will popup).
 - Days with Holidays are skipped (an error will popup).
-- Days with already registered hours are skipped (an error will popup).
+- Days with already registered hours are skipped (an Absence API error will popup).
 
 ```sh
 absence.sh
