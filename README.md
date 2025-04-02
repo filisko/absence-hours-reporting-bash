@@ -46,7 +46,7 @@ To find API's credentials, you can go to: Absence ➜ Profile ➜ Integrations �
 
 Then, use the [last option](#show-last-time-entry) documented below to see how time entries are being created from your browser, so that you adjust the configuration file accordingly: timezone, timezone name and schedules.
 
-Please be aware that these three settings might change overtime, e.g.: summer time change. Use the [last option](#show-last-time-entry) again to readjust after you've created a time entry from the browser to use it as a reference.
+Please be aware that these three settings might change overtime, e.g.: summer time change. Use the [last option](#show-last-time-entry) again to readjust the settings after you've created a time entry from the browser to use it as a reference.
 
 ## 🕹️ Usage
 
