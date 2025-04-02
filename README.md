@@ -40,13 +40,13 @@ wget https://raw.githubusercontent.com/filisko/absence-hours-reporting-bash/refs
 chmod +x absence.sh
 ```
 
-After installing it and running it for the first time, it will create a **JSON config file** where you will have to put your **Absence API ID and Key, configure your day schedule and your time zone**.
-
-Use the `last` option documented below after you set up your API ID and Key to see how time entries are being created from your browser, then, adjust the configuration file accordingly: timezone, timezone name and schedules.
-
-Please be aware that these three settings might change, e.g.: summer time change. Use the `last` command to readjust these settings after you've created a time entry from the browser to use it as a reference.
+After installing it and running it for the first time, it will create a **JSON config file** where you will have to put your **Absence API ID and Key**.
 
 To find API's credentials, you can go to: Absence -> Profile -> Integrations -> API Key (ID/Key).
+
+Then, use the `last` option documented below to see how time entries are being created from your browser so that you adjust the configuration file accordingly: timezone, timezone name and schedules.
+
+Please be aware that these three settings might change overtime, e.g.: summer time change. Use the `last` option to readjust after you've created a time entry from the browser to use it as a reference.
 
 ## 🕹️ Usage
 
