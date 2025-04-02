@@ -42,7 +42,7 @@ chmod +x absence.sh
 
 After installing it and running it for the first time, it will create a **JSON config file** where you will have to put your **Absence API ID and Key**.
 
-To find API's credentials, you can go to: Absence -> Profile -> Integrations -> API Key (ID/Key).
+To find API's credentials, you can go to: Absence ➜ Profile ➜ Integrations ➜ API Key (ID/Key).
 
 Then, use the [last option](#show-last-time-entry) documented below to see how time entries are being created from your browser so that you adjust the configuration file accordingly: timezone, timezone name and schedules.
 
