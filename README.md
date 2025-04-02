@@ -135,7 +135,7 @@ This watches for changes either on the code or in any of the tests.
 
 ### Run all tests:
 
-This script is used for GitHub actions. It runs all tests.
+This script is used for the GitHub action. It runs all tests.
 
 ```sh
 ./tests.sh
