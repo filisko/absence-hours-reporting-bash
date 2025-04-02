@@ -93,7 +93,7 @@ Usually what you would want to do is:
 - Go to the browser.
 - Create a time entry.
 - See what it looks like with this operation.
-- Adjust the config file (timezone, timezone name, start time, end time, etc.). This way you'll make sure that the time entries are created as the browser would.
+- Adjust the config file accordingly (timezone, timezone name, start time, end time, etc.). This way you'll make sure that the time entries are created as the browser would.
 
 ```sh
 absence.sh last
