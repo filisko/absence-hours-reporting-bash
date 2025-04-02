@@ -123,7 +123,7 @@ git clone git@github.com:filisko/absence-hours-reporting-bash.git
 
 ### Watch & Run the tests:
 
-This watches for changes either on the code or any of the tests.
+This watches for changes either on the code or in any of the tests.
 
 ```sh
 # watch all tests
