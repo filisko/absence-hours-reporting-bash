@@ -40,9 +40,13 @@ wget https://raw.githubusercontent.com/filisko/absence-hours-reporting-bash/refs
 chmod +x absence.sh
 ```
 
-After installing it an running it for the first time, it will create a **JSON config file** where you have to put your **Absence API ID and Key, configure your day schedule and your time zone (please note that this might change throughout its usage, e.g.: summer time change)**.
+After installing it and running it for the first time, it will create a **JSON config file** where you will have to put your **Absence API ID and Key**.
 
-To find API's credentials, you can go to: Absence -> Profile -> Integrations -> API Key (ID/Key).
+To find API's credentials, you can go to: Absence ➜ Profile ➜ Integrations ➜ API Key (ID/Key).
+
+Then, use the [last option](#show-last-time-entry) documented below to see how time entries are being created from your browser, so that you adjust the configuration file accordingly: timezone, timezone name and schedules.
+
+Please be aware that these three settings might change overtime, e.g.: summer time change. Use the [last option](#show-last-time-entry) again to readjust the settings after you've created a time entry from the browser to use it as a reference.
 
 ## 🕹️ Usage
 
@@ -79,6 +83,22 @@ This option allows you to specify your own dates range.
 absence.sh 2025-03-10 2025-03-13
 ```
 
+### Show last time entry
+
+You might be interested in what a time entry looks like, especially the last one.
+
+We suggest you use this option to set up: the timezone, timezone name and schedules.
+
+Usually what you would want to do is:
+- Go to the browser.
+- Create a time entry.
+- See what it looks like with this operation.
+- Adjust the config file accordingly (timezone, timezone name, start time, end time, etc.). This way you'll make sure that the time entries are created as the browser would.
+
+```sh
+absence.sh last
+```
+
 ### Show help
 
 Shows a short description of all the available options.
@@ -86,10 +106,6 @@ Shows a short description of all the available options.
 ```sh
 absence.sh help
 ```
-
-## 🚩 Known issues
-
-tofill
 
 ## 🤝 Contributing
 
