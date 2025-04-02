@@ -45,6 +45,7 @@ function test_schedule_entries_are_created() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"12:00\", \"type\": \"work\"}, {\"start\": \"12:00\", \"end\": \"13:00\", \"type\": \"break\"}]'"
     mock get_config_id 'echo "123456"'
     mock get_config_timezone 'printf "+0100"'
+    mock get_config_timezone_name 'printf "Central European Standar Time"'
     mock date_has_absences 'return 1'
 
     mock api "echo '{\"status\": 200, \"body\": null}'"
@@ -62,6 +63,7 @@ function test_valid_json_payload_is_sent() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"12:00\", \"type\": \"work\"}, {\"start\": \"12:00\", \"end\": \"13:00\", \"type\": \"break\"}]'"
     mock get_config_id 'echo "123456"'
     mock get_config_timezone 'printf "+0100"'
+    mock get_config_timezone_name 'printf "Central European Standar Time"'
     mock load_absences_into_cache 'return 0'
     mock date_has_absences 'return 1'
 
@@ -70,12 +72,6 @@ function test_valid_json_payload_is_sent() {
     result="$(create_remote_time_entries "2025-03-03" "2025-03-04")"
 
     assert_contains "POST timespans/create" "$result"
-
-    assert_contains '"userId": "123456"' "$result"
-    assert_contains '"type": "break"' "$result"
-    assert_contains '"sourceId": "manual"' "$result"
-    assert_contains '"sourceType": "browser"' "$result"
-    assert_contains '"timezone": "+0100"' "$result"
 
     assert_contains "Creating work entry from 09:00 to 12:00" "$result"
     assert_contains 'POST timespans/create {
@@ -87,7 +83,8 @@ function test_valid_json_payload_is_sent() {
     "sourceType": "browser",
     "sourceId": "manual"
   },
-  "timezone": "+0100"
+  "timezone": "+0100",
+  "timezoneName": "Central European Standar Time"
 }' "$result"
     assert_contains 'POST timespans/create {
   "userId": "123456",
@@ -98,7 +95,8 @@ function test_valid_json_payload_is_sent() {
     "sourceType": "browser",
     "sourceId": "manual"
   },
-  "timezone": "+0100"
+  "timezone": "+0100",
+  "timezoneName": "Central European Standar Time"
 }' "$result"
 
     assert_contains "Creating break entry from 12:00 to 13:00" "$result"
@@ -111,7 +109,8 @@ function test_valid_json_payload_is_sent() {
     "sourceType": "browser",
     "sourceId": "manual"
   },
-  "timezone": "+0100"
+  "timezone": "+0100",
+  "timezoneName": "Central European Standar Time"
 }' "$result"
     assert_contains 'POST timespans/create {
   "userId": "123456",
@@ -122,7 +121,8 @@ function test_valid_json_payload_is_sent() {
     "sourceType": "browser",
     "sourceId": "manual"
   },
-  "timezone": "+0100"
+  "timezone": "+0100",
+  "timezoneName": "Central European Standar Time"
 }' "$result"
 }
 
@@ -130,6 +130,7 @@ function test_when_current_day_is_a_weekend_it_is_skipped() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
     mock get_config_timezone 'printf "+0100"'
+    mock get_config_timezone_name 'printf "Central European Standar Time"'
     mock load_absences_into_cache 'return 0'
 
     mock api "echo '{\"status\": 422, \"body\": null}'; return 4"
@@ -144,6 +145,7 @@ function test_when_current_day_has_absences_it_is_skipped() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
     mock get_config_timezone 'printf "+0100"'
+    mock get_config_timezone_name 'printf "Central European Standar Time"'
     mock load_absences_into_cache 'return 0'
     mock date_has_absences 'return 0'
 
@@ -156,6 +158,7 @@ function test_when_loading_absences_into_cache_fails() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
     mock get_config_timezone 'printf "+0100"'
+    mock get_config_timezone_name 'printf "Central European Standar Time"'
     mock load_absences_into_cache 'echo "Internal error is echoed"; return 5'
 
     result="$(create_remote_time_entries "2025-03-04" "2025-03-04")"
@@ -168,6 +171,7 @@ function test_when_current_day_has_holidays_it_is_skipped() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
     mock get_config_timezone 'printf "+0100"'
+    mock get_config_timezone_name 'printf "Central European Standar Time"'
     mock load_absences_into_cache 'return 0'
     mock date_has_absences 'return 1'
     mock get_holiday 'printf "epiphany"'
@@ -181,6 +185,7 @@ function test_when_there_is_an_api_422_error() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
     mock get_config_timezone 'printf "+0100"'
+    mock get_config_timezone_name 'printf "Central European Standar Time"'
     mock load_absences_into_cache 'return 0'
     mock date_has_absences 'return 1'
 
@@ -196,6 +201,7 @@ function test_when_there_is_an_api_412_error() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
     mock get_config_timezone 'printf "+0100"'
+    mock get_config_timezone_name 'printf "Central European Standar Time"'
     mock load_absences_into_cache 'return 0'
     mock date_has_absences 'return 1'
     
@@ -212,6 +218,8 @@ function test_when_there_is_an_api_500_error() {
     mock get_config_schedule "echo '[{\"start\": \"09:00\", \"end\": \"17:00\", \"type\": \"work\"}]'"
     mock get_config_id 'echo "123456"'
     mock get_config_timezone 'printf "+0100"'
+    mock get_config_timezone_name 'printf "Central European Standar Time"'
+
     mock load_absences_into_cache 'return 0'
     mock date_has_absences 'return 1'
 

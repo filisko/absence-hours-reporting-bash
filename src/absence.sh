@@ -111,6 +111,10 @@ function get_config_timezone() {
     jq -r .timezone "$DIR/absence.json"
 }
 
+function get_config_timezone_name() {
+    jq -r .timezone_name "$DIR/absence.json"
+}
+
 function create_config() {
     echo '{
     "id": "<fill>",
@@ -292,6 +296,30 @@ function show_greetings() {
     echo $(bold_green "Hi $name! 👋😊")
 }
 
+function show_last_timespan_entry() {
+    local json_payload=$(jq -cjn '{
+    "limit": 1,
+    "sortBy": {
+        "start": -1
+    }
+}')
+
+    response="$(api "POST" "timespans" "$json_payload")"
+    status=$?
+
+    if [ $status -ne 0 ]; then
+        http_status="$(echo -n "$response" | jq -r '.status' 2> /dev/null)"
+        http_body="$(echo -n "$response" | jq -r '.body' 2> /dev/null)"
+
+        echo $(error; red "$http_status error: Don't know how to handle it") 
+        echo "Response: $response"
+
+        return 1
+    fi
+
+    printf "$response" | jq -r '.data[0] | {timezone, timezoneName, type, start, end, startInTimezone, endInTimezone, source}' 2> /dev/null
+}
+
 function get_holiday() {
     if ! is_valid_date "$1"; then
         echo "$(error; red 'A valid date is required')"
@@ -438,6 +466,7 @@ function create_remote_time_entries() {
 
     local userId=$(get_config_id)
     local timezone=$(get_config_timezone)
+    local timezoneName=$(get_config_timezone_name)
 
     local current_date="$start_date"
     load_absences_into_cache
@@ -482,14 +511,15 @@ function create_remote_time_entries() {
             
             local json_payload=$(jq -n --arg userId "$userId" --arg start "$start_datetime" \
                 --arg end "$end_datetime" --arg type "$type" \
-                --arg timezone "$timezone" \
+                --arg timezone "$timezone" --arg timezoneName "$timezoneName" \
                 '{
                     userId: $userId,
                     start: $start,
                     end: $end,
                     type: $type,
                     source: { sourceType: "browser", sourceId: "manual" },
-                    timezone: $timezone
+                    timezone: $timezone,
+                    timezoneName: $timezoneName
                 }')
 
             echo -n "╰➤ $(str_pad "Creating $type entry from $start to $end" 41) "
@@ -574,14 +604,15 @@ function run() {
         return 1
     fi
 
-    # help
+    # show help
     help="$1"
     if [[ "$help" == "help" ]]; then
         echo "Available options:"
         echo ""
         echo "$ absence.sh: Register a time entry for today."
         echo "$ absence.sh week: Registers time entries for the week."
-        echo "$ absence.sh 2025-03-25 2025-03-28: Register time entries for a specific range."
+        echo "$ absence.sh last: Shows the last time entry, helps to configure the right setup."
+        echo "$ absence.sh 2025-03-25 2025-03-28: Register time entries for a specific range. Make sure that startInTimezone and endInTimezone match the wanted values."
         echo "$ absence.sh help: Shows this help."
         echo ""
         echo "Please note that all options are restricted to future dates by Absence."
@@ -623,6 +654,23 @@ function run() {
 
         create_remote_time_entries "$start_date" "$end_date"
         return $?
+    fi
+
+    # show last time entry
+    last="$1"
+    if [[ "$last" == "last" ]]; then
+        echo "This is how it looks your last timespan entry:"
+        show_last_timespan_entry
+        return $?
+    fi
+
+    # unkown
+    help="$1"
+    if [[ ! -z "$1" ]]; then
+        echo "This is an unknown option, please run:"
+        echo "$ absence.sh help"
+        echo ""
+        return 0
     fi
 
     # today, one working day

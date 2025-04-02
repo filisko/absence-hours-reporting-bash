@@ -119,3 +119,17 @@ function test_when_start_date_and_end_date() {
 
     assert_contains "input params: 2025-02-24 2025-02-27" "$result"
 }
+
+function test_show_last_time_entry() {
+    mock config_exists ok
+    mock show_greetings ok
+
+    mock show_last_timespan_entry 'echo "method called"'
+    
+    # mock today "echo '2025-03-01'"
+
+    result="$(run "last")"
+
+    assert_contains "This is how it looks your last timespan entry" "$result"
+    assert_contains "method called" "$result"
+}
