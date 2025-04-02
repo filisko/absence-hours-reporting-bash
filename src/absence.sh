@@ -595,15 +595,6 @@ function run() {
         return $?
     fi
 
-    if ! config_exists; then
-        create_config
-
-        echo "A config file was not found so one was created (absence.json), please fill in your values."
-        echo "Go to Absence -> Profile -> Integrations -> API Key (ID/Key)"
-        
-        return 1
-    fi
-
     # show help
     help="$1"
     if [[ "$help" == "help" ]]; then
@@ -620,6 +611,15 @@ function run() {
         return 0
     fi
 
+    if ! config_exists; then
+        create_config
+
+        echo "A config file was not found so one was created (absence.json), please fill in your values."
+        echo "Go to Absence -> Profile -> Integrations -> API Key (ID/Key)"
+        
+        return 1
+    fi
+
     show_greetings
     if [[ $? -ne 0 ]]; then
         return $?
@@ -628,7 +628,7 @@ function run() {
 
     today="$(today)"
 
-    # weekly submit, preferably to run on Friday
+    # create time entries for the week
     week="$1"
     if [[ "$week" == "week" ]]; then
         monday_of_the_week="$(get_date_monday "$today")"
@@ -643,7 +643,7 @@ function run() {
         return 1
     fi
 
-    # manual day start and end ranges
+    # create time entries for a custom date range
     start_date="$1"
     end_date="$2"
     if is_valid_date "$start_date"; then
@@ -664,16 +664,15 @@ function run() {
         return $?
     fi
 
-    # unkown
-    help="$1"
+    # unknown
     if [[ ! -z "$1" ]]; then
         echo "This is an unknown option, please run:"
         echo "$ absence.sh help"
         echo ""
-        return 0
+        return 1
     fi
 
-    # today, one working day
+    # create a time entry for today
     if ! date_is_workable "$today"; then
         echo $(error; red "Today must be a working day, try using the week or dates range options.")
         echo "$ absence.sh week"
