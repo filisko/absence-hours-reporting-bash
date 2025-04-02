@@ -322,7 +322,7 @@ function show_last_timespan_entry() {
 
 function get_holiday() {
     if ! is_valid_date "$1"; then
-        echo "$(error; red 'A valid date is required')"
+        echo $(error; red 'A valid date is required')
         return 1
     fi
 
@@ -443,17 +443,17 @@ function create_remote_time_entries() {
     declare -a types=("work" "break")
 
     if ! is_valid_date "$start_date" || ! is_valid_date "$end_date"; then
-        echo "$(error; red 'Start Date and End Date are required')"
+        echo $(error; red 'Start Date and End Date are required')
         return 1
     fi
 
     if [[ "$start_date" > "$end_date" ]]; then
-        echo "$(error; red 'Start Date cannot be greater than End Date')"
+        echo $(error; red 'Start Date cannot be greater than End Date')
         return 1
     fi
 
     if [[ ! "${types[@]}" =~ "${type}" ]]; then
-        echo "$(error; red 'Possible work types are: work, break')"
+        echo $(error; red 'Possible work types are: work, break')
         return 1
     fi
 
@@ -487,7 +487,7 @@ function create_remote_time_entries() {
         fi
 
         if date_has_absences "$current_date"; then
-            echo "$(red "╰➤  There were absences found.")"
+            echo $(red "╰➤  There were absences found.")
             current_date=$(add_days "$current_date" 1)
             echo ""
             continue
@@ -532,12 +532,12 @@ function create_remote_time_entries() {
                 http_body="$(echo -n "$response" | jq -r '.body' 2> /dev/null)"
 
                 if [[ $http_status -eq 422 ]]; then
-                    echo "$(red "┈➤ Validation error (422). The response:")"
+                    echo $(red "┈➤ Validation error (422). The response:")
                     echo "$http_body" | jq
                 elif [[ $http_status -eq 412 ]]; then
-                    echo "$(red "┈➤ Precondition Failed (412) error: $http_body")"
+                    echo $(red "┈➤ Precondition Failed (412) error: $http_body")
                 else
-                    echo "$(red "┈➤ $http_status error: Don't know how to handle it")"
+                    echo $(red "┈➤ $http_status error: Don't know how to handle it")
                     echo "Response: $response"
                 fi
             else
@@ -648,7 +648,7 @@ function run() {
     end_date="$2"
     if is_valid_date "$start_date"; then
         if ! is_valid_date "$end_date"; then
-            echo "$(error; red 'End Date is required')"
+            echo $(error; red 'End Date is required')
             return 1
         fi
 
