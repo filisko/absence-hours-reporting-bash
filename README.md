@@ -95,8 +95,6 @@ Usually what you would want to do is:
 - See what it looks like with this operation.
 - Adjust the config file (timezone, timezone name, start time, end time, etc.). This way you'll make sure that the time entries are created as the browser would.
 
-This avoids the issue of creating time entries, and after you see them in the browser, you realise that the hours have changed.
-
 ```sh
 absence.sh last
 ```
