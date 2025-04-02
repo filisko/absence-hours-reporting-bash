@@ -44,9 +44,9 @@ After installing it and running it for the first time, it will create a **JSON c
 
 To find API's credentials, you can go to: Absence -> Profile -> Integrations -> API Key (ID/Key).
 
-Then, use the `last` option documented below to see how time entries are being created from your browser so that you adjust the configuration file accordingly: timezone, timezone name and schedules.
+Then, use the [last option](#show-last-time-entry) documented below to see how time entries are being created from your browser so that you adjust the configuration file accordingly: timezone, timezone name and schedules.
 
-Please be aware that these three settings might change overtime, e.g.: summer time change. Use the `last` option to readjust after you've created a time entry from the browser to use it as a reference.
+Please be aware that these three settings might change overtime, e.g.: summer time change. Use the [last option](#show-last-time-entry) again to readjust after you've created a time entry from the browser to use it as a reference.
 
 ## 🕹️ Usage
 
