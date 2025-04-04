@@ -99,20 +99,20 @@ Usually what you would want to do is:
 absence.sh last
 ```
 
-### Cron
-
-If you want to go to the next level, you can install this as a cron to run it when you finish your working day from Monday to Friday (if there is an absence or holiday, it won't do anything).
-
-```text
-1 17 * * 1-5 /path/absence.sh
-```
-
 ### Show help
 
 Shows a short description of all the available options.
 
 ```sh
 absence.sh help
+```
+
+### Cron
+
+If you want to go to the next level, you can install this as a cron to run it when you finish your working day from Monday to Friday (if there is an absence or holiday, it won't do anything).
+
+```text
+1 17 * * 1-5 /path/absence.sh
 ```
 
 ## 🤝 Contributing
