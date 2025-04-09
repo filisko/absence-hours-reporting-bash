@@ -1,5 +1,5 @@
-src/absence.json
 lib
 .idea
 *.zip
 *.log
+*.json
