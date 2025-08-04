@@ -63,6 +63,19 @@ Restrictions:
 absence.sh
 ```
 
+Output example:
+
+```text
+📅 Absence.IO hours reporting tool v1.1.0
+
+Hi Filis Futsarov! 👋😊
+
+Date: 2025-06-30
+╰➤ Creating work entry from 06:00 to 12:00   (In timezone: 08:00 to 14:00) ✔
+╰➤ Creating break entry from 12:00 to 13:00  (In timezone: 14:00 to 15:00) ✔
+╰➤ Creating work entry from 13:00 to 15:00   (In timezone: 15:00 to 17:00) ✔
+```
+
 ### Register your hours for the whole week
 
 With the same restrictions as the previous one.

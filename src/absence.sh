@@ -712,7 +712,7 @@ function run() {
 
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    echo $(bold "📅 Absence.IO hours reporting tool v1.0.1") 
+    echo $(bold "📅 Absence.IO hours reporting tool v1.1.0") 
     echo ""
 
     run $@
