@@ -1,4 +1,6 @@
 #!/bin/bash
+export LANG=C.UTF-8
+export LC_ALL=C.UTF-8
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
@@ -142,10 +144,19 @@ function create_config() {
 }
 
 function request() {
-    # store the response with together with the status code at the and of the content on error
-    http_response=$(curl --max-time 3 --silent --show-error --write-out "#HTTPSTATUS#:%{http_code}" "$@" 2>&1)
+    # create stderr temp file (to temporarily store stderr inside of it)
+    local _errfile
+    _errfile=$(mktemp)
+
+    # stdoutwrite-out goest to http_response, stderr goes to tmp file
+    http_response=$(curl --max-time 3 --silent --show-error \
+        --write-out "#HTTPSTATUS#:%{http_code}" "$@" 2> "$_errfile")
     curl_status=$?
 
+    # we read and remove the stderr file
+    local curl_err
+    curl_err=$(<"$_errfile")
+    rm -f "$_errfile"
 
     local http_body=$(echo $http_response | sed -E 's/#HTTPSTATUS#\:[0-9]{3}$//')
     local http_status=$(echo $http_response | tr -d '\n' | sed -E 's/.*#HTTPSTATUS#:([0-9]{3})$/\1/')
@@ -155,10 +166,13 @@ function request() {
     local short_http_status=${http_status:0:1}
 
     if [[ $curl_status -ne 0 ]]; then
+        # in case of an internal curl error we put stderr in .body
         jq="$(jq -njc --arg status "$curl_status" \
-            --arg body "$http_body" '{status: ($status | tonumber), body: $body}')"
-        printf "$jq"
-        return $curl_status
+                    --arg body "$curl_err"    \
+             '{status: ($status|tonumber), body: $body}')"
+
+         printf "%s" "$jq"
+         return $curl_status
     fi
 
     # 200,201,2xx are converted to bash's success code: 0
@@ -414,7 +428,8 @@ function load_absences_into_cache() {
         return 5
     fi
 
-    ABSENCES_CACHE="$(printf "$response" | jq -c '.data')"
+    clean_response=$(printf '%s' "$response" | tr -d '\000-\037')
+    ABSENCES_CACHE="$(printf "$clean_response" | jq -c '.data')"
 }
 
 function date_has_absences() {
@@ -425,11 +440,16 @@ function date_has_absences() {
         return 1
     fi
 
-    # Check if the date exists in any of the "days" arrays in ABSENCES_CACHE
-    result=$(echo "$ABSENCES_CACHE" | jq --arg date "${start_date}T00:00:00.000Z" \
-        '[.[] | .days[] | .date] | index($date) != null')
+    local iso="${start_date}T00:00:00.000Z"
 
-    if [[ $result == "true" ]]; then
+    local found
+    found=$(printf '%s' "$ABSENCES_CACHE" | \
+        jq -re --arg date "$iso" '
+          any(.[]; any(.days[]?.date; . == $date))
+        ')
+
+
+    if [[ $found == "true" ]]; then
         return 0
     else
         return 1
@@ -541,6 +561,13 @@ function create_remote_time_entries() {
                     echo "Response: $response"
                 fi
             else
+                startDateInTimezone=$(echo "$response" | jq -r '.startInTimezone')
+                startHourInTimezone="${startDateInTimezone:11:5}"
+
+                endDateInTimezone=$(echo "$response" | jq -r '.endInTimezone')
+                endHourInTimezone="${endDateInTimezone:11:5}"
+
+                echo -n "(In your timezone: $startHourInTimezone to $endHourInTimezone) "
                 echo $(success)
             fi
         done
