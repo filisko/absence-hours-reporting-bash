@@ -3,9 +3,6 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$DIR/../../src/absence.sh"
 
-# avoids "lib/bashunit: line 1053: printf: 1.54: invalid number" error
-export LC_NUMERIC="en_US.UTF-8"
-
 function test_it_stores_absences_in_cache() {
     mock get_config_id 'echo "123456"'
 

@@ -3,10 +3,6 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$DIR/../../src/absence.sh"
 
-# avoids "lib/bashunit: line 1053: printf: 1.54: invalid number" error
-export LC_NUMERIC="en_US.UTF-8"
-
-
 function test_when_start_date_and_end_date_are_incorrect() { 
     result="$(date_has_absences)"
     assert_contains "The start date must be valid" "$result"

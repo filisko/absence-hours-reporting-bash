@@ -3,9 +3,6 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$DIR/../../src/absence.sh"
 
-# avoids "lib/bashunit: line 1053: printf: 1.54: invalid number" error
-export LC_NUMERIC="en_US.UTF-8"
-
 function test_when_start_date_and_end_date_are_incorrect() { 
     result="$(create_remote_time_entries)"
     assert_contains "Start Date and End Date are require" "$result"
@@ -48,7 +45,7 @@ function test_schedule_entries_are_created() {
     mock get_config_timezone_name 'printf "Central European Standar Time"'
     mock date_has_absences 'return 1'
 
-    mock api "echo '{\"status\": 200, \"body\": null}'"
+    mock api "echo '{\"startInTimezone\":\"2025-03-03T10:00:00+01:00\",\"endInTimezone\":\"2025-03-03T12:00:00+01:00\"}'"
 
     result="$(create_remote_time_entries "2025-03-03" "2025-03-04")"
 
