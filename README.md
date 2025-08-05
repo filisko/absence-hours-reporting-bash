@@ -112,6 +112,41 @@ Usually what you would want to do is:
 absence.sh last
 ```
 
+### Show time entries of a specific range
+
+This command gives you a full picture of your current time entries. By default, it fetches the last 50 days until today.
+
+```sh
+absence.sh records
+```
+
+Example output:
+
+```text
+2025-07-07: 4.00h [work(4.00h)]
+2025-07-08: 9.00h [work(6.00h) break(1.00h) work(2.00h)]
+2025-07-09: 9.00h [work(6.00h) break(1.00h) work(2.00h)]
+2025-07-10: 9.00h [work(6.00h) break(1.00h) work(2.00h)]
+```
+
+There are also 3 different colors for each line.
+
+- It will be Red if it's zero (no time entries for that day).
+- Green if it matches config file's `normal_hours` parameter (9 by default).
+- Yellow if its neither of those (e.g.: you have an absence and you worked half of the day).
+
+This will fetch entries from 2025-07-20 to today.
+
+```sh
+absence.sh records 2025-07-20
+```
+
+This will fetch entries for a specific range.
+
+```sh
+absence.sh records 2025-07-20 2025-07-30
+```
+
 ### Show help
 
 Shows a short description of all the available options.
@@ -150,7 +185,7 @@ This watches for changes either on the code or in any of the tests.
 # watch all tests
 ./watch.sh tests
 
-# watch one specific test (probably what you want at first)
+# watch one specific test (probably what you want at first to do TDD)
 ./watch.sh tests/run.test.sh
 ```
 

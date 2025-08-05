@@ -117,6 +117,10 @@ function get_config_timezone_name() {
     jq -r .timezone_name "$DIR/absence.json"
 }
 
+function get_config_normal_hours() {
+    jq -r .normal_hours "$DIR/absence.json"
+}
+
 function create_config() {
     echo '{
     "id": "<fill>",
@@ -138,7 +142,9 @@ function create_config() {
             "type": "work"
         }
     ],
-    "timezone": "+0100"
+    "normal_hours": 9,
+    "timezone": "+0200",
+    "timezone_name": "Central European Summer Time"
 }
 ' > "$DIR/absence.json"
 }
@@ -332,6 +338,86 @@ function show_last_timespan_entry() {
     fi
 
     printf "$response" | jq -r '.data[0] | {timezone, timezoneName, type, start, end, startInTimezone, endInTimezone, source}' 2> /dev/null
+}
+
+function records() {
+    local start="$1T00:00:00.000Z"
+    local end="$2T23:59:59.000Z"
+    local target="${9:-$(get_config_normal_hours)}"
+
+    local json_payload=$(jq -cjn --arg start "$start" --arg end "$end" '{
+      "limit": -1,
+      "filter": {
+        "start": {"$gte": $start},
+        "end": {"$lte": $end}
+      }
+    }')
+
+    response="$(api "POST" "timespans" "$json_payload")"
+    status=$?
+
+    if [ $status -ne 0 ]; then
+        http_status="$(echo -n "$response" | jq -r '.status' 2> /dev/null)"
+        http_body="$(echo -n "$response" | jq -r '.body' 2> /dev/null)"
+
+        echo $(error; red "$http_status error: Don't know how to handle it") 
+        echo "Response: $response"
+
+        return 1
+    fi
+
+    local count
+    count=$(jq '.data | length' <<< "$response")
+    if [ "$count" -eq 0 ]; then
+        echo "No records found."
+        return 1
+    fi
+
+    # pipeline: extract start/end/type, compute hours and aggregate by day
+    echo "$response" \
+    | jq -r '.data[] | "\(.startInTimezone[0:10]) \(.startInTimezone) \(.endInTimezone) \(.type)"' \
+    | while IFS=' ' read -r day start end type; do
+          si=$(date -d "$start" +%s)
+          sf=$(date -d "$end"   +%s)
+          diff=$(( sf - si ))
+          # print day, hours (2 decimals), and type
+          awk -v d="$day" -v s="$diff" -v t="$type" 'BEGIN {
+            h = s/3600
+            printf "%s %.2f %s\n", d, h, t
+          }'
+      done \
+    | awk -v target="$target" '
+        {
+          day   = $1
+          hours = $2
+          type  = $3
+          # accumulate hours
+          sum[day] += hours
+          # build details string
+          details[day] = details[day] sprintf("%s(%.2fh) ", type, hours)
+        }
+        END {
+          for (d in sum) {
+            h = sum[d]
+            # selecciona color
+            if (h == 0) {
+              color = "\033[31m"
+            } else if (h == target) {
+              color = "\033[32m"
+            } else {
+              color = "\033[38;5;208m"
+            }
+            reset = "\033[0m"
+            # remove last extra space
+            detail_str = details[d]
+            sub(/[ ]+$/, "", detail_str)
+            
+            printf "%s: %s%.2fh%s [%s]\n", d, color, h, reset, detail_str
+          }
+        }
+      ' \
+    | sort
+
 }
 
 function get_holiday() {
@@ -688,6 +774,16 @@ function run() {
     if [[ "$last" == "last" ]]; then
         echo "This is how it looks your last timespan entry:"
         show_last_timespan_entry
+        return $?
+    fi
+
+    # show records
+    records="$1"
+    if [[ "$records" == "records" ]]; then
+        local start="${2:-$(date -d '50 days ago' '+%Y-%m-%d')}"
+        local end="${3:-$(date '+%Y-%m-%d')}"
+
+        records "$start" "$end"
         return $?
     fi
 
